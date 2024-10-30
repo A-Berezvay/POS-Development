@@ -22,8 +22,15 @@ function LoginPage() {
 
   // Function to handle submitting the PIN for verification
   const handleSubmit = () => {
+    const mockCorrectPin = "1234"; // Hardcoded PIN for mock verification
+
     if (pin.length === 4) {
-      verifyPin(pin);
+      if (pin === mockCorrectPin) {
+        navigate('/dashboard');
+      } else {
+        setError ('Invalid PIN, please try again');
+      }
+      // verifyPin(pin);
     } else {
       setError('Please enter all 4 digits of the PIN');
     }

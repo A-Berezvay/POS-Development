@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css';  // Optional, for styling
+import '../../styles/LoginPage.css';  // Optional, for styling
 
-function LoginPage() {
+function LoginPage({ onLogin }) {
   // State to manage the entered PIN
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
@@ -18,6 +18,7 @@ function LoginPage() {
   // Function to handle clearing the entered PIN
   const handleClear = () => {
     setPin('');
+    setError(''); // Clear error message when clearing PIN
   };
 
   // Function to handle submitting the PIN for verification
@@ -26,33 +27,13 @@ function LoginPage() {
 
     if (pin.length === 4) {
       if (pin === mockCorrectPin) {
-        navigate('/dashboard');
-      } else {
-        setError ('Invalid PIN, please try again');
-      }
-      // verifyPin(pin);
-    } else {
-      setError('Please enter all 4 digits of the PIN');
-    }
-  };
-
-  // Function to verify the PIN via backend
-  const verifyPin = async (pin) => {
-    try {
-      const response = await fetch('/api/verify-pin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pin }),
-      });
-      if (response.ok) {
-        navigate('/dashboard'); // Redirect to dashboard after successful login
+        onLogin(); // Call the parent onLogin function to set authentication state
+        navigate('/dashboard'); // Redirect to dashboard
       } else {
         setError('Invalid PIN, please try again');
       }
-    } catch (err) {
-      setError('Error verifying PIN, please try again later');
+    } else {
+      setError('Please enter all 4 digits of the PIN');
     }
   };
 
@@ -64,7 +45,7 @@ function LoginPage() {
         <input
           type="password"
           value={pin}
-          readOnly  // Making it read-only so it can only be updated via number pad
+          readOnly // Making it read-only so it can only be updated via number pad
           maxLength="4"
           style={{ fontSize: '24px', textAlign: 'center', letterSpacing: '10px', width: '100px' }}
         />
@@ -93,4 +74,5 @@ function LoginPage() {
 }
 
 export default LoginPage;
+
 

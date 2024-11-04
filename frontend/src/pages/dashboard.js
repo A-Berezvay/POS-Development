@@ -1,8 +1,7 @@
-// Assuming you are using functional React components and Hooks to build this dashboard:
-
 import React, { useState } from 'react';
 import '../styles/dashboard.css'; // Assuming there's some basic styling to differentiate the areas of the app
 import MenuManagement from '../components/menu/MenuManagement'; // Import the MenuManagement component
+import OrderPage from '../components/order/OrderPage';
 
 const Dashboard = () => {
   // Sample state representing tables, whether they are open or occupied, and which waiter opened it
@@ -15,13 +14,18 @@ const Dashboard = () => {
 
   // State to manage the current view (service or menu management)
   const [currentView, setCurrentView] = useState('service');
+  const [selectedTable, setSelectedTable] = useState(null);
 
   const handleOpenTable = (tableId, waiter) => {
-    // Opening a new table and assigning it to the waiter
-    const updatedTables = tables.map((table) =>
-      table.id === tableId ? { ...table, status: 'occupied', waiter: waiter } : table
-    );
-    setTables(updatedTables);
+    // Set the selected table and show the OrderPage
+    setSelectedTable(tableId);
+    setCurrentView('order');
+  };
+
+  const handleBackToDashboard = () => {
+    // Return to the dashboard
+    setSelectedTable(null);
+    setCurrentView('service');
   };
 
   const handlePickUpTable = (tableId) => {
@@ -49,14 +53,16 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Conditional Rendering Based on Selected Tab */}
-      {currentView === 'service' ? (
+      {/* Conditional rendering based on the current view */}
+      {currentView === 'menu' && <MenuManagement />}
+
+      {currentView === 'service' && !selectedTable && (
         <div className="tables-container">
           {tables.map((table) => (
             <div key={table.id} className={`table ${table.status}`}>
               <h3>Table {table.id}</h3>
               {table.status === 'free' ? (
-                <button onClick={() => handleOpenTable(table.id, 'CurrentWaiter')}>Open Table</button>
+                <button onClick={() => handleOpenTable(table.id)}>Open Table</button>
               ) : (
                 <button onClick={() => handlePickUpTable(table.id)}>Pick Up Table</button>
               )}
@@ -64,8 +70,10 @@ const Dashboard = () => {
             </div>
           ))}
         </div>
-      ) : (
-        <MenuManagement />
+      )}
+
+      {currentView === 'order' && selectedTable && (
+        <OrderPage selectedTable={selectedTable} onBack={handleBackToDashboard} />
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import '../styles/dashboard.css'; // Assuming there's some basic styling to diff
 import MenuManagement from '../components/menu/MenuManagement'; // Import the MenuManagement component
 import OrderPage from '../components/order/OrderPage';
 
-const Dashboard = () => {
+const Dashboard = ({ onAddToCart }) => {
   // Sample state representing tables, whether they are open or occupied, and which waiter opened it
   const [tables, setTables] = useState([
     { id: 1, status: 'free', waiter: null },
@@ -73,7 +73,11 @@ const Dashboard = () => {
       )}
 
       {currentView === 'order' && selectedTable && (
-        <OrderPage selectedTable={selectedTable} onBack={handleBackToDashboard} />
+        <OrderPage 
+          selectedTable={selectedTable} 
+          onBack={handleBackToDashboard}
+          onAddToCart={onAddToCart} 
+        />
       )}
     </div>
   );

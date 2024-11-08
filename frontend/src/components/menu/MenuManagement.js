@@ -5,9 +5,9 @@ import AddMenuItemForm from './AddMenuItemForm';
 
 const MenuManagement = () => {
   const [menuItems, setMenuItems] = useState([
-    { id: 1, name: 'Coke', category: 'Drinks', price: 15, description: 'Chilled beverage' },
-    { id: 2, name: 'Chicken Wings', category: 'Appetizers', price: 45, description: 'Spicy and crispy wings' },
-    { id: 3, name: 'Steak', category: 'Entrees', price: 120, description: 'Grilled to perfection' },
+    { id: 1, name: 'Coke', category: 'Drinks', price: 2, description: 'Chilled beverage' },
+    { id: 2, name: 'Chicken Wings', category: 'Appetizers', price: 5, description: 'Spicy and crispy wings' },
+    { id: 3, name: 'Steak', category: 'Entrees', price: 15, description: 'Grilled to perfection' },
   ]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showAddForm, setShowAddForm] = useState(false);

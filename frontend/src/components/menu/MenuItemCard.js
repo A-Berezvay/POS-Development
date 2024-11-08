@@ -34,7 +34,7 @@ const MenuItemCard = ({ item, onEdit, onRemove }) => {
       ) : (
         <div>
           <h3>{item.name}</h3>
-          <p>Price: {item.price} DKK</p>
+          <p>Price: £{item.price}</p>
           <p>{item.description}</p>
           <button onClick={() => setIsEditing(true)}>Edit</button>
           <button onClick={() => onRemove(item.id)}>Remove</button>

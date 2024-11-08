@@ -32,4 +32,33 @@
   background-color: #218838;
 }
 
+/* Quantity Display */
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.quantity-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.quantity-button:hover {
+  background-color: #0056b3;
+}
+
+.quantity-display {
+  margin: 0 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
   

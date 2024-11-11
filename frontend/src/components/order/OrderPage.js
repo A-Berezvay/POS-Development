@@ -15,7 +15,7 @@ const menuItems = [
 
 const categories = ['Drinks', 'Appetizers', 'Entrees', 'Desserts'];
 
-const OrderPage = ({ selectedTable, onBack, onAddToCart }) => {
+const OrderPage = ({ selectedTable, onAddToCart }) => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [cart, setCart] = useState([]); // State to manage items added to the cart
@@ -137,9 +137,6 @@ const OrderPage = ({ selectedTable, onBack, onAddToCart }) => {
           ))}
         </div>
       )}
-      <button onClick={onBack} className="back-button">
-        Back to Dashboard
-      </button>
     </div>
   );
 };

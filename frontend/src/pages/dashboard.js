@@ -3,58 +3,23 @@ import '../styles/dashboard.css'; // Assuming there's some basic styling to diff
 import MenuManagement from '../components/menu/MenuManagement'; // Import the MenuManagement component
 import OrderPage from '../components/order/OrderPage';
 
-const Dashboard = ({ onAddToCart }) => {
-  // Sample state representing tables, whether they are open or occupied, and which waiter opened it
-  const [tables, setTables] = useState([
-    { id: 1, status: 'free', waiter: null },
-    { id: 2, status: 'occupied', waiter: 'John' },
-    { id: 3, status: 'free', waiter: null },
-    { id: 4, status: 'occupied', waiter: 'Sarah' },
-  ]);
-
+const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {
   // State to manage the current view (service or menu management)
   const [currentView, setCurrentView] = useState('service');
   const [selectedTable, setSelectedTable] = useState(null);
 
-  const handleOpenTable = (tableId, waiter) => {
+  const handleOpenTable = (tableId) => {
     // Set the selected table and show the OrderPage
     setSelectedTable(tableId);
     setCurrentView('order');
-  };
 
-  const handleBackToDashboard = () => {
-    // Return to the dashboard
-    setSelectedTable(null);
-    setCurrentView('service');
-  };
-
-  const handlePickUpTable = (tableId) => {
-    // Handling pickup of an already opened table (e.g., continue serving an existing table)
-    alert(`Table ${tableId} picked up.`);
+    // Assign the waiter and update the table status to "occupied"
+    onOpenTable(tableId, 'John Doe'); // Assign a waiter named "John Doe"
   };
 
   return (
     <div className="dashboard-container">
       <h2>Welcome to eMenu POS Dashboard</h2>
-
-      {/* Tab Navigation */}
-      <div className="tabs-container">
-        <button
-          className={`tab-button ${currentView === 'service' ? 'active' : ''}`}
-          onClick={() => setCurrentView('service')}
-        >
-          Service
-        </button>
-        <button
-          className={`tab-button ${currentView === 'menu' ? 'active' : ''}`}
-          onClick={() => setCurrentView('menu')}
-        >
-          Menu Management
-        </button>
-      </div>
-
-      {/* Conditional rendering based on the current view */}
-      {currentView === 'menu' && <MenuManagement />}
 
       {currentView === 'service' && !selectedTable && (
         <div className="tables-container">
@@ -64,9 +29,11 @@ const Dashboard = ({ onAddToCart }) => {
               {table.status === 'free' ? (
                 <button onClick={() => handleOpenTable(table.id)}>Open Table</button>
               ) : (
-                <button onClick={() => handlePickUpTable(table.id)}>Pick Up Table</button>
+                <button onClick={() => handleOpenTable(table.id)}>Pick Up Table</button>
               )}
-              {table.status === 'occupied' && <p>Waiter: {table.waiter}</p>}
+              {table.status === 'occupied' && table.waiter && (
+                <p>Waiter: {table.waiter}</p> // Displaying the assigned waiter's name
+              )}
             </div>
           ))}
         </div>
@@ -75,8 +42,7 @@ const Dashboard = ({ onAddToCart }) => {
       {currentView === 'order' && selectedTable && (
         <OrderPage 
           selectedTable={selectedTable} 
-          onBack={handleBackToDashboard}
-          onAddToCart={onAddToCart} 
+          onAddToCart={onAddToCart}
         />
       )}
     </div>
@@ -85,15 +51,5 @@ const Dashboard = ({ onAddToCart }) => {
 
 export default Dashboard;
 
-// In this updated version:
-// - Added tabs for "Service" and "Menu Management".
-// - Clicking on "Service" displays the table view, while clicking on "Menu Management" shows the menu management component.
-// - State (`currentView`) is used to control which view is displayed.
 
 
-// In this sample code:
-// - `tables` represents the current state of the tables.
-// - A waiter can "open" a table, which changes the state to occupied and assigns the table to the waiter.
-// - An "occupied" table can be picked up by clicking the Pick Up Table button, which allows the user to continue serving the same table.
-
-// Make sure to add CSS to make the interface user-friendly. Each table should be visually distinct based on its state (e.g., different colors for occupied vs. free).

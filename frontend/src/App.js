@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './components/auth/LoginPage';
 import Dashboard from './pages/dashboard';
+import OrderPage from './components/order/OrderPage';
 import Header from './components/layout/header';
 import CartPage from './components/cart/CartPage';
 import PaymentProcessingPage from './components/payment/PaymentProcessingPage';
@@ -51,38 +52,57 @@ function App() {
     });
   };
 
-  // Function to remove item from cart for a specific table
   const removeItemFromCart = (tableId, itemId) => {
     setCart((prevCart) => {
       const tableCart = prevCart[tableId] || [];
-      return {
+      const updatedTableCart = tableCart.filter((item) => item.id !== itemId);
+      
+      const updatedCart = {
         ...prevCart,
-        [tableId]: tableCart.filter((item) => item.id !== itemId),
+        [tableId]: updatedTableCart,
       };
+  
+      // If the updated cart for this table is empty, delete it and update table status
+      if (updatedTableCart.length === 0) {
+        delete updatedCart[tableId];
+        setTables((prevTables) =>
+          prevTables.map((table) =>
+            table.id === tableId ? { ...table, status: 'free', waiter: null } : table
+          )
+        );
+      }
+  
+      return updatedCart;
     });
   };
 
   // Send an order to the kitchen
-  const sendOrderToKitchen = (tableId) => {
-    setOrdersReadyForPayment((prevOrders) => ({
-      ...prevOrders,
-      [tableId]: cart[tableId],
-    }));
-    
-    setCart((prevCart) => {
-      const updatedCart = { ...prevCart };
-      delete updatedCart[tableId];
-      return updatedCart;
-    });
+const sendOrderToKitchen = (tableId) => {
+  // Move the order from cart to orders ready for payment
+  setOrdersReadyForPayment((prevOrders) => ({
+    ...prevOrders,
+    [tableId]: cart[tableId],
+  }));
+  
+  setCart((prevCart) => {
+    const updatedCart = { ...prevCart };
+    delete updatedCart[tableId];
+    return updatedCart;
+  });
 
-    // No need to update table status again here since it's already handled when opening the table
-  };
+  // Update the table status to indicate the order is now in the kitchen
+  setTables((prevTables) =>
+    prevTables.map((table) =>
+      table.id === tableId ? { ...table, status: 'in-kitchen' } : table
+    )
+  );
+};
 
   return (
     <Router> 
       {/* Render Header only when user is authenticated */}
       {isAuthenticated && (
-        <Header cart={cart} onLogout={handleLogout} onRemoveItem={removeItemFromCart} />
+        <Header cart={cart} onLogout={handleLogout} />
       )}
 
       <Routes>
@@ -91,7 +111,17 @@ function App() {
           <>
             <Route 
               path="/dashboard" 
-              element={<Dashboard onAddToCart={addItemToCart} tables={tables} onOpenTable={handleOpenTable} />} 
+              element={<Dashboard tables={tables} onOpenTable={handleOpenTable} />} 
+            />
+            <Route
+              path="/table/:tableId/order"
+              element={
+                <OrderPage
+                  tables={tables}
+                  cart={cart}
+                  onAddToCart={addItemToCart}
+                />
+              }
             />
             <Route
               path="/cart"
@@ -115,6 +145,7 @@ function App() {
 }
 
 export default App;
+
 
 
 

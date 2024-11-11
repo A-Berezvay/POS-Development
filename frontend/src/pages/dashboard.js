@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import '../styles/dashboard.css'; // Assuming there's some basic styling to differentiate the areas of the app
 import MenuManagement from '../components/menu/MenuManagement'; // Import the MenuManagement component
 import OrderPage from '../components/order/OrderPage';
 
 const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {
-  // State to manage the current view (service or menu management)
   const [currentView, setCurrentView] = useState('service');
   const [selectedTable, setSelectedTable] = useState(null);
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleOpenTable = (tableId) => {
     // Set the selected table and show the OrderPage
@@ -15,6 +16,9 @@ const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {
 
     // Assign the waiter and update the table status to "occupied"
     onOpenTable(tableId, 'John Doe'); // Assign a waiter named "John Doe"
+
+    // Navigate to the Order Page for the selected table
+    navigate(`/table/${tableId}/order`);
   };
 
   return (
@@ -50,6 +54,7 @@ const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {
 };
 
 export default Dashboard;
+
 
 
 

@@ -1,44 +1,96 @@
+/* User Info Container - Top Left */
+.user-info-container {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  z-index: 1000; /* Ensures it stays on top */
+}
+
+.user-button {
+  background-color: #61788c;
+  color: #f2f2f2;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.user-button .waiter-name {
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.logout-menu {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  background-color: #111c26;
+  border: 1px solid #61788c;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.logout-button {
+  background-color: transparent;
+  color: #f2f2f2;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #bf8c80;
+}
+
+/* Bottom Navigation Bar */
 .header-container {
   position: fixed;
   width: 100%;
   bottom: 0;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 10px;
-    background-color: #111c26;
-    color: #f2f2f2;
-  }
-  
-  .header-button {
-    background-color: #61788c;
-    color: #f2f2f2;
-    border: none;
-    padding: 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-  }
-  
-  .header-button:hover {
-    background-color: #bf8c80;
-  }
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  background-color: #111c26;
+  color: #f2f2f2;
+}
 
-  .cart-button {
-    position: relative;
-  }
-  
-  .cart-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: #f44336;
-    color: white;
-    border-radius: 50%;
-    padding: 3px 7px;
-    font-size: 12px;
-    font-weight: bold;
-  }
+.header-button {
+  background-color: #61788c;
+  color: #f2f2f2;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.header-button:hover {
+  background-color: #bf8c80;
+}
+
+.cart-button {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #f44336;
+  color: white;
+  border-radius: 50%;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
   
   

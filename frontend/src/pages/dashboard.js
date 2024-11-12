@@ -10,13 +10,6 @@ const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {
   const navigate = useNavigate(); // Initialize navigate
 
   const handleOpenTable = (tableId) => {
-    // Set the selected table and show the OrderPage
-    setSelectedTable(tableId);
-    setCurrentView('order');
-
-    // Assign the waiter and update the table status to "occupied"
-    onOpenTable(tableId, 'John Doe'); // Assign a waiter named "John Doe"
-
     // Navigate to the Order Page for the selected table
     navigate(`/table/${tableId}/order`);
   };
@@ -33,7 +26,7 @@ const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {
               {table.status === 'free' ? (
                 <button onClick={() => handleOpenTable(table.id)}>Open Table</button>
               ) : (
-                <button onClick={() => handleOpenTable(table.id)}>Pick Up Table</button>
+                <button onClick={() => handleOpenTable(table.id)}>Add Items</button>
               )}
               {table.status === 'occupied' && table.waiter && (
                 <p>Waiter: {table.waiter}</p> // Displaying the assigned waiter's name

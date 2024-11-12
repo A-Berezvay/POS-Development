@@ -32,6 +32,10 @@
   background-color: #218838;
 }
 
+.order-page-container{
+  padding: 50px 0;
+}
+
 /* Quantity Display */
 
 .quantity-control {

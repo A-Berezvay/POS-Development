@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import '../../styles/OrderPage.css';
 
 const menuItems = [
@@ -46,8 +46,8 @@ const drinksSubCategories = ['Wines', 'Beers', 'Spirits', 'Soft Drinks', 'Hot Dr
 const wineTypes = ['Red', 'White', 'Rose', 'Sparkling'];
 const wineSizes = ['125ml', '175ml', '250ml', 'bottle'];
 
-const OrderPage = ({ selectedTable, onAddToCart }) => {
-  const navigate = useNavigate();
+const OrderPage = ({ onAddToCart }) => {
+  const { tableId } = useParams();
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedWineType, setSelectedWineType] = useState(null);
@@ -80,8 +80,7 @@ const OrderPage = ({ selectedTable, onAddToCart }) => {
       note: itemState[item.id]?.note || '',
     };
 
-    setCart((prevCart) => [...prevCart, newItem]);
-    onAddToCart(selectedTable, newItem);
+    onAddToCart(tableId, newItem);
 
     setItemState((prevState) => ({
       ...prevState,
@@ -90,7 +89,6 @@ const OrderPage = ({ selectedTable, onAddToCart }) => {
         note: '',
       },
     }));
-    setSelectedWineSize(null);
   };
 
   const handleIncreaseQuantity = (itemId) => {
@@ -125,7 +123,7 @@ const OrderPage = ({ selectedTable, onAddToCart }) => {
 
   return (
     <div className="order-page-container">
-      <h2>Table {selectedTable} - Select a Category</h2>
+      <h2>Table {tableId} - Order</h2>
       <div className="category-buttons-container">
         {mainCategories.map((category) => (
           <button

@@ -8,7 +8,7 @@ import CartPage from './components/cart/CartPage';
 import PaymentProcessingPage from './components/payment/PaymentProcessingPage';
 
 function App() {
-  
+
   // State to track if the user is logged in
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [cart, setCart] = useState({});
@@ -32,26 +32,43 @@ function App() {
     setIsAuthenticated(false);
   };
 
-  // Function to update table status and assign a waiter
-  const handleOpenTable = (tableId, waiter = 'Current Waiter') => {
-    setTables((prevTables) =>
-      prevTables.map((table) =>
-        table.id === tableId ? { ...table, status: 'occupied', waiter } : table
-      )
-    );
-  };
-
   // Function to add item to cart for a specific table
   const addItemToCart = (tableId, item) => {
     setCart((prevCart) => {
       const tableCart = prevCart[tableId] || [];
-      return {
-        ...prevCart,
-        [tableId]: [...tableCart, item],
-      };
+
+      // Check if the item already exists in the cart
+      const existingItemIndex = tableCart.findIndex((cartItem) => cartItem.id === item.id);
+      
+      if (existingItemIndex !== -1) {
+        // Item exists, update its quantity
+        const updatedTableCart = [...tableCart];
+        updatedTableCart[existingItemIndex] = {
+          ...updatedTableCart[existingItemIndex],
+          quantity: updatedTableCart[existingItemIndex].quantity + item.quantity,
+        };
+        return {
+          ...prevCart,
+          [tableId]: updatedTableCart,
+        };
+      } else {
+        // Item doesn't exist, add it to the cart
+        return {
+          ...prevCart,
+          [tableId]: [...tableCart, item],
+        };
+      }
     });
+
+    // Update the table status and assign a waiter once an item is added to the cart
+    setTables((prevTables) =>
+      prevTables.map((table) =>
+        table.id === Number(tableId) ? { ...table, status: 'occupied', waiter: 'John Doe' } : table
+      )
+    );
   };
 
+  // Function to remove item from cart for a specific table
   const removeItemFromCart = (tableId, itemId) => {
     setCart((prevCart) => {
       const tableCart = prevCart[tableId] || [];
@@ -61,42 +78,59 @@ function App() {
         ...prevCart,
         [tableId]: updatedTableCart,
       };
-  
+
       // If the updated cart for this table is empty, delete it and update table status
       if (updatedTableCart.length === 0) {
         delete updatedCart[tableId];
         setTables((prevTables) =>
           prevTables.map((table) =>
-            table.id === tableId ? { ...table, status: 'free', waiter: null } : table
+            table.id === Number(tableId) ? { ...table, status: 'free', waiter: null } : table
           )
         );
       }
-  
+
       return updatedCart;
     });
   };
 
-  // Send an order to the kitchen
-const sendOrderToKitchen = (tableId) => {
-  // Move the order from cart to orders ready for payment
-  setOrdersReadyForPayment((prevOrders) => ({
-    ...prevOrders,
-    [tableId]: cart[tableId],
-  }));
-  
-  setCart((prevCart) => {
-    const updatedCart = { ...prevCart };
-    delete updatedCart[tableId];
-    return updatedCart;
-  });
+  // Function to update item quantity in cart
+  const updateItemQuantity = (tableId, itemId, quantityChange) => {
+    setCart((prevCart) => {
+      const tableCart = prevCart[tableId] || [];
+      const updatedTableCart = tableCart.map((item) =>
+        item.id === itemId
+          ? { ...item, quantity: Math.max(1, item.quantity + quantityChange) }
+          : item
+      );
 
-  // Update the table status to indicate the order is now in the kitchen
-  setTables((prevTables) =>
-    prevTables.map((table) =>
-      table.id === tableId ? { ...table, status: 'in-kitchen' } : table
-    )
-  );
-};
+      return {
+        ...prevCart,
+        [tableId]: updatedTableCart,
+      };
+    });
+  };
+
+  // Send an order to the kitchen
+  const sendOrderToKitchen = (tableId) => {
+    // Move the order from cart to orders ready for payment
+    setOrdersReadyForPayment((prevOrders) => ({
+      ...prevOrders,
+      [tableId]: cart[tableId],
+    }));
+    
+    setCart((prevCart) => {
+      const updatedCart = { ...prevCart };
+      delete updatedCart[tableId];
+      return updatedCart;
+    });
+
+    // Update the table status to indicate the order is now waiting for payment
+    setTables((prevTables) =>
+      prevTables.map((table) =>
+        table.id === Number(tableId) ? { ...table, status: 'waiting-for-payment' } : table
+      )
+    );
+  };
 
   return (
     <Router> 
@@ -111,14 +145,12 @@ const sendOrderToKitchen = (tableId) => {
           <>
             <Route 
               path="/dashboard" 
-              element={<Dashboard tables={tables} onOpenTable={handleOpenTable} />} 
+              element={<Dashboard tables={tables} onAddToCart={addItemToCart} />} 
             />
             <Route
               path="/table/:tableId/order"
               element={
                 <OrderPage
-                  tables={tables}
-                  cart={cart}
                   onAddToCart={addItemToCart}
                 />
               }
@@ -130,6 +162,7 @@ const sendOrderToKitchen = (tableId) => {
                   cart={cart} 
                   onRemoveItem={removeItemFromCart} 
                   onSendToKitchen={sendOrderToKitchen}
+                  onUpdateQuantity={updateItemQuantity} // Pass the function here
                 />
               }
             />
@@ -145,9 +178,6 @@ const sendOrderToKitchen = (tableId) => {
 }
 
 export default App;
-
-
-
 
 
 

@@ -48,10 +48,6 @@ const Header = ({ cart, onLogout, waiterName = 'John Doe' }) => {
         <button onClick={() => handleTabClick('/search')} className="header-button">
           <FontAwesomeIcon icon={faMagnifyingGlass} />
         </button>
-        <button onClick={() => handleTabClick('/cart')} className="header-button cart-button">
-          <FontAwesomeIcon icon={faCartShopping} />
-          {totalCartItems > 0 && <span className="cart-badge">{totalCartItems}</span>}
-        </button>
         <button onClick={() => handleTabClick('/payment')} className="header-button">
           <FontAwesomeIcon icon={faSterlingSign} />
         </button>

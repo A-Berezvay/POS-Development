@@ -73,15 +73,30 @@ const OrderPage = ({ onAddToCart }) => {
   };  
 
   const handleAddToCart = (item) => {
+    let price;
+  
+    // Determine the correct price if it's a wine with different sizes
+    if (typeof item.price === 'object' && selectedWineSize) {
+      price = parseFloat(item.price[selectedWineSize]) || 0; // Parse to float to ensure it's a number
+    } else if (typeof item.price === 'number') {
+      price = item.price;
+    } else {
+      price = 0; // Default to 0 if no price found
+    }
+  
+    // Create a new item object to add to the cart
     const newItem = {
       ...item,
-      size: selectedWineSize || '',
-      quantity: itemState[item.id]?.quantity || 1,
-      note: itemState[item.id]?.note || '',
+      size: selectedWineSize || '', // Add size if applicable
+      quantity: itemState[item.id]?.quantity || 1, // Set quantity
+      note: itemState[item.id]?.note || '', // Add note if applicable
+      price, // Set price explicitly as a number
     };
-
+  
+    // Add the new item to the cart
     onAddToCart(tableId, newItem);
-
+  
+    // Reset item state
     setItemState((prevState) => ({
       ...prevState,
       [item.id]: {
@@ -90,6 +105,8 @@ const OrderPage = ({ onAddToCart }) => {
       },
     }));
   };
+  
+  
 
   const handleIncreaseQuantity = (itemId) => {
     setItemState((prevState) => ({

@@ -6,8 +6,10 @@ import OrderPage from './components/order/OrderPage';
 import Header from './components/layout/header';
 import CartModal from './components/cart/CartModal';
 import PaymentProcessingPage from './components/payment/PaymentProcessingPage';
+import SplitPaymentModal from './components/payment/SplitPaymentModal'; // Import SplitPaymentModal
 
 function App() {
+  // State to track if the user is authenticated
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [cart, setCart] = useState({});
   const [ordersReadyForPayment, setOrdersReadyForPayment] = useState({});
@@ -18,6 +20,10 @@ function App() {
     // Add more tables as needed
   ]);
   const [isCartModalVisible, setIsCartModalVisible] = useState(false);
+
+  // State to manage split payment modal visibility and the current table being split
+  const [isSplitModalVisible, setIsSplitModalVisible] = useState(false);
+  const [currentTableForSplit, setCurrentTableForSplit] = useState(null);
 
   const handleLogin = () => {
     setIsAuthenticated(true);
@@ -141,6 +147,17 @@ function App() {
     );
   };
 
+  // Function to open the split payment modal
+  const openSplitPaymentModal = (tableId) => {
+    setCurrentTableForSplit(tableId);
+    setIsSplitModalVisible(true);
+  };
+
+  // Function to close the split payment modal
+  const closeSplitPaymentModal = () => {
+    setIsSplitModalVisible(false);
+    setCurrentTableForSplit(null);
+  };
 
   return (
     <Router>
@@ -160,6 +177,7 @@ function App() {
                 <PaymentProcessingPage 
                   ordersReadyForPayment={ordersReadyForPayment} 
                   onPayment={handlePayment}
+                  onSplitPayment={openSplitPaymentModal} // Pass function to open split payment modal
                 />
               } 
             />
@@ -175,6 +193,14 @@ function App() {
         onUpdateQuantity={updateItemQuantity}
         onSendToKitchen={sendOrderToKitchen}
       />
+
+      {isSplitModalVisible && currentTableForSplit !== null && (
+        <SplitPaymentModal
+          ordersReadyForPayment={ordersReadyForPayment[currentTableForSplit]}
+          onClose={closeSplitPaymentModal}
+          onPayment={() => handlePayment(currentTableForSplit)}
+        />
+      )}
     </Router>
   );
 }

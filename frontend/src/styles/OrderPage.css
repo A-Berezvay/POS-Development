@@ -36,6 +36,41 @@
   padding: 50px 0;
 }
 
+/* Order category buttons*/
+
+.category-button {
+  background-color: blue;
+  width: 45%;
+  height: 60px;
+  margin: 30px 5px;
+  border: 1px solid white;
+  font-size: 2em;
+}
+
+.category-button.active{
+  background-color: darkblue;
+}
+
+.sub-category-buttons-container{
+  margin: 30px 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.sub-category-button{
+  background-color: blue;
+  margin: 0 10px;
+}
+
+.sub-category-button.active{
+  background-color: darkblue;
+}
+
+.wine-type-button{
+  background-color: blue;
+}
+
 /* Quantity Display */
 
 .quantity-control {

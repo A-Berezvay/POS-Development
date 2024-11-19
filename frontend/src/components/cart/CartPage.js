@@ -14,7 +14,7 @@ const CartPage = ({ cart, onRemoveItem, onSendToKitchen, onUpdateQuantity, onUpd
             {cart[tableId].map((item) => (
               <div key={item.id} className="cart-item">
                 <div className="cart-item-details">
-                  <span>{item.name} - £{item.price}</span>
+                  <span>{item.name}</span>
                 </div>
                 <div className="quantity-control">
                     <button onClick={() => onUpdateQuantity(tableId, item.id, -1)} className="quantity-button">-</button>

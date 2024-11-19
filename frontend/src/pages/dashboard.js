@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import '../styles/dashboard.css'; // Assuming there's some basic styling to differentiate the areas of the app
-import MenuManagement from '../components/menu/MenuManagement'; // Import the MenuManagement component
 import OrderPage from '../components/order/OrderPage';
 
 const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {

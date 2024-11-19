@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import AllergenModal from './AllergenModal';
 import '../../styles/OrderPage.css';
 
 const menuItems = [
 
   // Starters
-  { id: 1, name: 'Spelt Cavatelli', category: 'starters', price: 7 },
+  { id: 1, name: 'Spelt Cavatelli', category: 'starters', price: 7, allergens: { contains: ['Gluten'], mayContain: ['Nuts'], removable: ['Cheese']}},
   { id: 2, name: 'Potato and Tarragon Veloute', category: 'starters', price: 6 },
   { id: 3, name: 'Smoked River Trout', category: 'starters', price: 8 },
   { id: 4, name: 'Roasted Pork Neck', category: 'starters', price: 10 },
@@ -54,6 +55,8 @@ const OrderPage = ({ onAddToCart }) => {
   const [selectedWineSize, setSelectedWineSize] = useState(null);
   const [cart] = useState([]);
   const [itemState, setItemState] = useState({});
+  const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
+  const [currentAllergens, setCurrentAllergens] = useState([]);
 
   const handleMainCategoryClick = (category) => {
     setSelectedMainCategory(category.toLowerCase());
@@ -71,6 +74,16 @@ const OrderPage = ({ onAddToCart }) => {
   const handleWineSizeClick = (size) => {
     setSelectedWineSize (size);
   };  
+
+  const handleShowAllergens = (allergens) => {
+    setCurrentAllergens(allergens);
+    setIsAllergenModalVisible(true);
+  };
+
+  const handleCloseAllergens = () => {
+    setIsAllergenModalVisible(false);
+    setCurrentAllergens([]);
+  };
 
   const handleAddToCart = (item) => {
     let price;
@@ -259,6 +272,13 @@ const OrderPage = ({ onAddToCart }) => {
                 >
                   Add to Cart
                 </button>
+                <button
+                  onClick={() => handleShowAllergens(item.allergens)}
+                  className="allergen-button"
+                >
+                  View Allergens
+                </button>
+
               </div>
             ))}
 
@@ -276,6 +296,11 @@ const OrderPage = ({ onAddToCart }) => {
           ))}
         </div>
       )}
+      <AllergenModal
+        allergens={currentAllergens}
+        isVisible={isAllergenModalVisible}
+        onClose={handleCloseAllergens}
+      />
     </div>
   );
 };

@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
+import AllergenModal from '../order/AllergenModal';
 import '../../styles/CartModal.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, onSendToKitchen }) => {
+  const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
+  const [currentAllergens, setCurrentAllergens] = useState([]);
+
+  const handleShowAllergens = (allergens) => {
+    setCurrentAllergens(allergens);
+    setIsAllergenModalVisible(true);
+  };
+
+  const handleCloseAllergens = () => {
+    setIsAllergenModalVisible(false);
+    setCurrentAllergens([]);
+  };
+
   if (!isVisible) {
     return null; // Don't render anything if the modal is not visible
   }
@@ -23,6 +37,13 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
                 <div key={item.id} className="cart-item">
                   <div className="cart-item-details">
                     <span>{item.name}</span>
+                    <button
+                      onClick={() => handleShowAllergens(item.allergens)}
+                      className="allergen-button"
+                    >
+                      View Allergens
+                    </button>
+                    {item.note && <div className="item-note"><strong>Note:</strong> {item.note}</div>}
                   </div>
                   <div className="quantity-control">
                     <button onClick={() => onUpdateQuantity(tableId, item.id, -1)} className="quantity-button">-</button>
@@ -41,6 +62,14 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
           ))
         )}
       </div>
+      {isAllergenModalVisible && (
+        <AllergenModal
+          allergens={currentAllergens}
+          isVisible={isAllergenModalVisible}
+          onClose={handleCloseAllergens}
+        />
+      )}
+
     </div>
   );
 };

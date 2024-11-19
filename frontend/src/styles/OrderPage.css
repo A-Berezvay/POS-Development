@@ -1,0 +1,103 @@
+.cart-container {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-to-cart-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-to-cart-button:hover {
+  background-color: #218838;
+}
+
+.order-page-container{
+  padding: 50px 0;
+}
+
+/* Order category buttons*/
+
+.category-button {
+  background-color: blue;
+  width: 45%;
+  height: 60px;
+  margin: 30px 9px;
+  border: 1px solid white;
+  font-size: 2em;
+}
+
+.category-button.active{
+  background-color: darkblue;
+}
+
+.sub-category-buttons-container{
+  margin: 30px 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.sub-category-button{
+  background-color: blue;
+  margin: 0 10px;
+}
+
+.sub-category-button.active{
+  background-color: darkblue;
+}
+
+.wine-type-button{
+  background-color: blue;
+}
+
+/* Quantity Display */
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.quantity-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.quantity-button:hover {
+  background-color: #0056b3;
+}
+
+.quantity-display {
+  margin: 0 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+  

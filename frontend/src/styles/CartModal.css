@@ -1,0 +1,75 @@
+/* CartModal.css */
+
+.cart-modal {
+    position: fixed;
+    bottom: 40px;
+    right: 0;
+    width: 100%; /* Set width to 100% to prevent it from exceeding page width */
+    max-width: 500px; /* Max-width for better control */
+    height: 40%; /* Set height to 40% as you requested */
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(0);
+    z-index: 99;
+    overflow: hidden; /* Prevent overflow outside the modal */
+  }
+  
+  .cart-modal-content {
+    padding: 20px;
+    height: calc(100% - 40px); /* Height minus padding for better scroll fit */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds modal height */
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5em;
+  }
+  
+  .table-cart {
+    margin-top: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .quantity-control {
+    display: flex;
+    align-items: center;
+  }
+  
+  .quantity-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+  }
+  
+  .remove-button {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .send-to-kitchen-button {
+    background: green;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  
+  

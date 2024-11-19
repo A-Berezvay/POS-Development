@@ -1,0 +1,67 @@
+.pin-login-page {
+  text-align: center;
+  padding: 20px;
+}
+
+.pin-display input {
+  border: none;
+  background: none;
+  font-size: 36px;
+  letter-spacing: 0.5em;
+  margin-bottom: 20px;
+}
+
+.number-pad {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: center;
+  width: 200px;
+  margin: 0 auto 20px auto;
+}
+
+.number-button {
+  width: 60px;
+  height: 60px;
+  margin: 5px;
+  font-size: 24px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+}
+
+.number-button:active {
+  background-color: #ddd;
+}
+
+.controls {
+  margin-top: 20px;
+}
+
+.clear-button,
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 5px;
+}
+
+.clear-button {
+  background-color: #f44336;  /* Red for the clear button */
+}
+
+.clear-button:hover,
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+  

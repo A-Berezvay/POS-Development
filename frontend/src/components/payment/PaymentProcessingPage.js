@@ -6,16 +6,34 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [showSplitModal, setShowSplitModal] = useState(false);
 
-  const handlePaymentMethodSelect = (method) => {
-    setSelectedPaymentMethod(method);
+  // This function handles the calculation of total amount for a given table
+  const getTotalAmount = (tableId) => {
+    const ordersForTable = ordersReadyForPayment[tableId] || [];
+    return ordersForTable.reduce((total, item) => {
+      const price = parseFloat(item.price) || 0;
+      const quantity = item.quantity || 1;
+      return total + price * quantity;
+    }, 0);
   };
 
-  const handleSplitBill = () => {
-    setShowSplitModal(true);
+  // Function to open the Split Payment modal and pass totalAmount
+  const handleSplitBill = (tableId) => {
+    const totalAmount = getTotalAmount(tableId);  // Get total amount for this table
+    if (totalAmount > 0) {
+      setShowSplitModal(true);
+    } else {
+      console.error("Total amount is zero or invalid.");
+    }
   };
 
+  // Close the Split Payment modal
   const closeSplitModal = () => {
     setShowSplitModal(false);
+  };
+
+  // Handle payment method selection
+  const handlePaymentMethodSelect = (method) => {
+    setSelectedPaymentMethod(method);
   };
 
   return (
@@ -26,12 +44,7 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment }) => {
       ) : (
         Object.keys(ordersReadyForPayment).map((tableId) => {
           // Calculate total amount for the table
-          const totalAmount = ordersReadyForPayment[tableId].reduce((total, item) => {
-            const itemPrice = parseFloat(item.price); 
-            const itemQuantity = item.quantity || 1;
-
-            return total + (itemPrice * itemQuantity);
-          }, 0);
+          const totalAmount = getTotalAmount(tableId);
 
           return (
             <div key={tableId} className="payment-table">
@@ -65,7 +78,8 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment }) => {
                 </button>
               )}
 
-              <button onClick={handleSplitBill} className="split-bill-button">
+              {/* Button to trigger the Split Bill modal */}
+              <button onClick={() => handleSplitBill(tableId)} className="split-bill-button">
                 Split Bill
               </button>
             </div>
@@ -73,9 +87,10 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment }) => {
         })
       )}
 
+      {/* Conditionally render the SplitPaymentModal and pass totalAmount */}
       {showSplitModal && (
         <SplitPaymentModal
-          ordersReadyForPayment={ordersReadyForPayment}
+          totalAmount={getTotalAmount(Object.keys(ordersReadyForPayment)[0])} // Pass totalAmount to the modal
           onClose={closeSplitModal}
           onPayment={onPayment}
         />
@@ -85,8 +100,3 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment }) => {
 };
 
 export default PaymentProcessingPage;
-
-
-
-
-

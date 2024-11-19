@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/SplitPaymentModal.css';
 
-const SplitPaymentModal = ({ ordersReadyForPayment, currentTableId, onClose, onConfirmSplitPayment }) => {
-  // Retrieve the orders for the specified table
-  const ordersForTable = ordersReadyForPayment[currentTableId] || [];
+const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment }) => {
+  if (!totalAmount) {
+    console.error("Total amount is undefined or invalid.");
+  }
 
-  // Calculate the total amount for the table
-  const totalAmount = ordersForTable.reduce((total, item) => {
-    const price = parseFloat(item.price) || 0;
-    const quantity = item.quantity || 1;
-    return total + price * quantity;
-  }, 0);
+  // State declarations - these are all initialized unconditionally
+  const [splitAmounts, setSplitAmounts] = useState([0]);  // Amounts for each guest
+  const [numberOfGuests, setNumberOfGuests] = useState(1); // Number of guests
+  const [splitType, setSplitType] = useState('evenly'); // Type of split: 'evenly', 'amount', etc.
 
-  // State to track split amounts, number of guests, and split type
-  const [splitAmounts, setSplitAmounts] = useState([0]);
-  const [numberOfGuests, setNumberOfGuests] = useState(1);
-  const [splitType, setSplitType] = useState('amount'); // 'amount', 'evenly', 'items'
+  useEffect(() => {
+    // Whenever numberOfGuests or splitType changes, update the splitAmounts if needed
+    if (splitType === 'evenly') {
+      const evenlySplitAmount = totalAmount / numberOfGuests;
+      setSplitAmounts(Array(numberOfGuests).fill(parseFloat(evenlySplitAmount.toFixed(2))));
+    }
+  }, [numberOfGuests, splitType, totalAmount]);
 
   // Handle evenly splitting the bill
   const handleSplitEvenly = () => {
@@ -34,7 +36,7 @@ const SplitPaymentModal = ({ ordersReadyForPayment, currentTableId, onClose, onC
     setSplitType('amount');
   };
 
-  // Handle splitting by items
+  // Handle splitting by items (for future implementation)
   const handleSplitByItems = () => {
     setSplitType('items');
   };
@@ -79,19 +81,7 @@ const SplitPaymentModal = ({ ordersReadyForPayment, currentTableId, onClose, onC
                     type="number"
                     value={amount}
                     onChange={(e) => handleAmountChange(index, e.target.value)}
-                    className="split-amount-input"
                   />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {splitType === 'items' && (
-            <div className="split-items">
-              {ordersForTable.map((item, index) => (
-                <div key={index} className="split-item">
-                  <label>{item.name}:</label>
-                  <span>£{(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -99,19 +89,19 @@ const SplitPaymentModal = ({ ordersReadyForPayment, currentTableId, onClose, onC
 
           {splitType === 'evenly' && (
             <div className="split-evenly">
-              {splitAmounts.map((amount, index) => (
-                <div key={index} className="split-amount-item">
-                  <label>Guest {index + 1}:</label>
-                  <span>£{amount.toFixed(2)}</span>
-                </div>
-              ))}
+              <p>Each guest will pay: £{(totalAmount / numberOfGuests).toFixed(2)}</p>
             </div>
           )}
-        </div>
-        <div className="split-payment-footer">
-          <button
-            className="confirm-payment-button"
-            onClick={() => onConfirmSplitPayment(splitAmounts)}
+
+          {splitType === 'items' && (
+            <div className="split-items">
+              <p>Split by items (not implemented)</p>
+            </div>
+          )}
+
+          <button 
+            onClick={() => onConfirmSplitPayment(splitAmounts)} 
+            className="confirm-split-button"
           >
             Confirm Split Payment
           </button>
@@ -122,6 +112,3 @@ const SplitPaymentModal = ({ ordersReadyForPayment, currentTableId, onClose, onC
 };
 
 export default SplitPaymentModal;
-
-
-

@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import '../../styles/OrderPage.css';
 
 const menuItems = [
 
   // Starters
-  { id: 1, name: 'Spelt Cavatelli, Baked Potato Skin Broth', category: 'starters', price: 7 },
-  { id: 2, name: 'Potato and Tarragon Veloute, House Cured', category: 'starters', price: 6 },
-  { id: 3, name: 'Hot Smoked Devonshire River Trout', category: 'starters', price: 8 },
+  { id: 1, name: 'Spelt Cavatelli', category: 'starters', price: 7 },
+  { id: 2, name: 'Potato and Tarragon Veloute', category: 'starters', price: 6 },
+  { id: 3, name: 'Smoked River Trout', category: 'starters', price: 8 },
   { id: 4, name: 'Roasted Pork Neck', category: 'starters', price: 10 },
   { id: 5, name: 'Soup of The Day', category: 'starters', price: 5 },
-  { id: 6, name: 'Charred Leek, Onion Puree, Ewe\'s Curd, Walnuts', category: 'starters', price: 9 },
+  { id: 6, name: 'Charred Leek, Onion Puree', category: 'starters', price: 9 },
   
   // Mains
   { id: 7, name: 'Roast Cornish Hake', category: 'mains', price: 15 },
   { id: 8, name: 'Fish & Chips', category: 'mains', price: 15 },
   { id: 9, name: 'Baked Megrim Sole', category: 'mains', price: 15 },
   { id: 10, name: 'Chew Valley Pork', category: 'mains', price: 15 },
-  { id: 11, name: 'Potato Dumplings, Squash, Vintage Rachel', category: 'mains', price: 15 },
+  { id: 11, name: 'Potato Dumplings', category: 'mains', price: 15 },
   { id: 12, name: 'Beef Burger', category: 'mains', price: 15 },
   { id: 13, name: 'Steak Fillet', category: 'mains', price: 15 },
   { id: 14, name: 'Club Sandwich', category: 'mains', price: 15 },
@@ -25,7 +25,7 @@ const menuItems = [
   // Sides 
   { id: 15, name: 'Triple Cooked Schips', category: 'sides', price: 4 },
   { id: 16, name: 'Skin On Fries', category: 'sides', price: 3.5 },
-  { id: 17, name: 'Charred Hispi Cabbage, Dill, Buttermilk', category: 'sides', price: 4.5 },
+  { id: 17, name: 'Charred Hispi Cabbage', category: 'sides', price: 4.5 },
   
   // Desserts
   { id: 18, name: 'Sticky Toffee Pudding', category: 'desserts', price: 6.5 },
@@ -52,7 +52,7 @@ const OrderPage = ({ onAddToCart }) => {
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedWineType, setSelectedWineType] = useState(null);
   const [selectedWineSize, setSelectedWineSize] = useState(null);
-  const [cart, setCart] = useState([]);
+  const [cart] = useState([]);
   const [itemState, setItemState] = useState({});
 
   const handleMainCategoryClick = (category) => {
@@ -77,11 +77,13 @@ const OrderPage = ({ onAddToCart }) => {
   
     // Determine the correct price if it's a wine with different sizes
     if (typeof item.price === 'object' && selectedWineSize) {
-      price = parseFloat(item.price[selectedWineSize]) || 0; // Parse to float to ensure it's a number
-    } else if (typeof item.price === 'number') {
-      price = item.price;
+      price = parseFloat(item.price[selectedWineSize]) || 0; // Parse wine price based on selected size
+    } 
+    // Handle food items with fixed price
+    else if (typeof item.price === 'number') {
+      price = item.price; // Use the item's numeric price directly
     } else {
-      price = 0; // Default to 0 if no price found
+      price = 0; // Fallback (should rarely be hit)
     }
   
     // Create a new item object to add to the cart
@@ -90,7 +92,7 @@ const OrderPage = ({ onAddToCart }) => {
       size: selectedWineSize || '', // Add size if applicable
       quantity: itemState[item.id]?.quantity || 1, // Set quantity
       note: itemState[item.id]?.note || '', // Add note if applicable
-      price, // Set price explicitly as a number
+      price: parseFloat(price).toFixed(2), // Set price explicitly as a number
     };
   
     // Add the new item to the cart
@@ -252,9 +254,8 @@ const OrderPage = ({ onAddToCart }) => {
                   placeholder="Add notes (e.g., no ice)"
                 />
                 <button
-                  onClick={() => handleAddToCart({ ...item, price: item.price[selectedWineSize] })}
+                  onClick={() => handleAddToCart(item)}
                   className="add-to-cart-button"
-                  disabled={typeof item.price === 'object' && !selectedWineSize}
                 >
                   Add to Cart
                 </button>

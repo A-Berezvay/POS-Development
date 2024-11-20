@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/SplitPaymentModal.css';
 
-const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment }) => {
+const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableId }) => {
   if (!totalAmount) {
     console.error("Total amount is undefined or invalid.");
   }
@@ -36,15 +36,16 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment }) => {
     setSplitType('amount');
   };
 
-  // Handle splitting by items (for future implementation)
-  const handleSplitByItems = () => {
-    setSplitType('items');
-  };
-
   // Add more guests for splitting the bill
   const addGuest = () => {
     setNumberOfGuests((prev) => prev + 1);
     setSplitAmounts((prev) => [...prev, 0]);
+  };
+
+  // Handle confirming the split payment
+  const handleConfirmSplitPayment = () => {
+    onConfirmSplitPayment(tableId);
+    onClose();  // Close the modal
   };
 
   return (
@@ -63,9 +64,6 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment }) => {
             </button>
             <button onClick={addGuest} className="add-guest-button">
               Add Guest
-            </button>
-            <button onClick={handleSplitByItems} className="split-by-items-button">
-              Split by Items
             </button>
             <button onClick={() => setSplitType('amount')} className="split-by-amount-button">
               Split by Amount
@@ -93,14 +91,8 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment }) => {
             </div>
           )}
 
-          {splitType === 'items' && (
-            <div className="split-items">
-              <p>Split by items (not implemented)</p>
-            </div>
-          )}
-
           <button 
-            onClick={() => onConfirmSplitPayment(splitAmounts)} 
+            onClick={handleConfirmSplitPayment} 
             className="confirm-split-button"
           >
             Confirm Split Payment

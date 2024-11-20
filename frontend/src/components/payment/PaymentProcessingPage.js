@@ -36,6 +36,10 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment }) => {
     setSelectedPaymentMethod(method);
   };
 
+  const handleConfirmSplitPayment = (splitAmounts) => {
+    console.log("Split amounts confirmed:", splitAmounts)
+  };
+
   return (
     <div className="payment-processing-container">
       <h2>Payment Processing</h2>
@@ -45,18 +49,23 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment }) => {
         Object.keys(ordersReadyForPayment).map((tableId) => {
           // Calculate total amount for the table
           const totalAmount = getTotalAmount(tableId);
-
           return (
             <div key={tableId} className="payment-table">
               <h3>Table {tableId}</h3>
+              <div className="payment-header">
+                <span>Qty</span>
+                <span>Name</span>
+                <span>Item Price</span>
+                <span>Total</span>
+              </div>
               {ordersReadyForPayment[tableId].map((item) => {
                 const itemPrice = parseFloat(item.price);
                 return (
                   <div key={item.id} className="payment-item">
+                    <span>{item.quantity}x</span>
                     <span>{item.name}</span>
-                    <span>Qty: {item.quantity}</span>
-                    <span>£{itemPrice.toFixed(2)} each</span>
-                    <span>Total: £{(itemPrice * item.quantity).toFixed(2)}</span>
+                    <span>£{itemPrice.toFixed(2)}</span>
+                    <span>£{(itemPrice * item.quantity).toFixed(2)}</span>
                   </div>
                 );
               })}
@@ -93,6 +102,7 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment }) => {
           totalAmount={getTotalAmount(Object.keys(ordersReadyForPayment)[0])} // Pass totalAmount to the modal
           onClose={closeSplitModal}
           onPayment={onPayment}
+          onConfirmSplitPayment={handleConfirmSplitPayment}
         />
       )}
     </div>

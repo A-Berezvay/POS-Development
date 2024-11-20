@@ -110,26 +110,44 @@ function App() {
   };
 
   const sendOrderToKitchen = (tableId) => {
-    setOrdersReadyForPayment((prevOrders) => ({
-      ...prevOrders,
-      [tableId]: cart[tableId],
-    }));
-
-    setCart((prevCart) => {
+    setOrdersReadyForPayment((prevOrders) => {
+      const existingOrdersForTable = prevOrders[tableId] || [];
+      const newOrdersForTable = cart[tableId] || [];
+  
+      // Combine existing orders with new orders, summing quantities of identical items
+      const combinedOrders = [...existingOrdersForTable];
+  
+      newOrdersForTable.forEach((newItem) => {
+        const existingItemIndex = combinedOrders.findIndex(item => item.id === newItem.id);
+        if (existingItemIndex !== -1) {
+          combinedOrders[existingItemIndex].quantity += newItem.quantity;
+        } else {
+          combinedOrders.push({...newItem});
+        }
+      });
+  
+      return {
+        ...prevOrders,
+        [tableId]: combinedOrders,
+      };
+    });
+  
+    // Clear the cart for that table after sending orders to the kitchen
+    setCart(prevCart => {
       const updatedCart = { ...prevCart };
       delete updatedCart[tableId];
       return updatedCart;
     });
-
-    setTables((prevTables) =>
-      prevTables.map((table) =>
-        table.id === Number(tableId) ? { ...table, status: 'waiting-for-payment', waiter: table.waiter } : table
-      )
-    );
-
-    // Hide the cart modal once the order is sent to the kitchen
+  
+    // Update table status
+    setTables(prevTables => prevTables.map(table =>
+      table.id === Number(tableId) ? { ...table, status: 'waiting-for-payment', waiter: table.waiter } : table
+    ));
+  
+    // Hide the cart modal
     setIsCartModalVisible(false);
   };
+  
 
   // Function to handle payment for a table
   const handlePayment = (tableId) => {

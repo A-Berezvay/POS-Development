@@ -1,6 +1,14 @@
+body{
+  background-color: #484747;
+}
+
 .pin-login-page {
   text-align: center;
   padding: 20px;
+}
+
+.pin-login-page h2{
+  color: #D9D9D9;
 }
 
 .pin-display input {
@@ -27,7 +35,8 @@
   cursor: pointer;
   border: 1px solid #ccc;
   border-radius: 50%;
-  background-color: #f0f0f0;
+  color: black;
+  background-color: #D9D9D9;
 }
 
 .number-button:active {

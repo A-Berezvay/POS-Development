@@ -3,7 +3,7 @@
     padding-bottom: 100px;
     max-width: 800px;
     margin: 0 auto;
-    background-color: #f9f9f9;
+    background-color: #484747;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
@@ -11,7 +11,7 @@
   .payment-table {
     margin-bottom: 20px;
     padding: 15px;
-    background-color: #fff;
+    background-color: #484747;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
@@ -22,7 +22,8 @@
     text-align: center; 
     font-weight: bold; 
     font-size: .85em;
-    border-bottom: 2px solid #61788C; 
+    border-bottom: 2px solid white; 
+    color: white;
     padding-bottom: 10px;
   }
   
@@ -32,6 +33,7 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
+    color: white;
     margin: 10px 0;
   }
   

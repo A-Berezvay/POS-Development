@@ -7,7 +7,7 @@
     width: 100%; /* Set width to 100% to prevent it from exceeding page width */
     max-width: 500px; /* Max-width for better control */
     height: 40%; /* Set height to 40% as you requested */
-    background: white;
+    background: #484747;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;

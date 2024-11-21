@@ -11,14 +11,18 @@
   z-index: 1000;
 }
 
-  .allergen-modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 400px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);  
-  }
+.allergen-modal-content {
+  background: #484747;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);  
+}
+
+.allergen-info li{
+  color: white;
+}
 
   .allergen-modal-header {
     display: flex;
@@ -30,6 +34,7 @@
 
   .close-button {
     cursor: pointer;
+    color: white;
   }
 
   .allergen-modal-body ul {

@@ -2,23 +2,25 @@ import React, { useState } from 'react';
 import '../styles/GuestModal.css';
 
 const GuestModal = ({isVisible, onClose, onConfirm }) => {
-    const [numberOfGuest, setNumberOfGuest] = useState(null);
+    const [numberOfGuest, setNumberOfGuest] = useState(1);
 
    const handleNumberOfGuest = (numberOfGuest) => {
     setNumberOfGuest(numberOfGuest);
    }
 
     const handleIncreaseGuest = () => {
-        numberOfGuest((prev) => prev + 1);
+        setNumberOfGuest((prev) => prev + 1);
     };
 
     const handleDecreaseGuest = () => {
-        numberOfGuest((prev) => prev - 1);
+        setNumberOfGuest((prev) => prev - 1);
     };
 
     const handleConfirmGuest = () => {
         onConfirm(numberOfGuest);
-        onClose();
+        if (onClose) {
+            onClose();
+        }
     };
 
     if (!isVisible) {
@@ -26,28 +28,18 @@ const GuestModal = ({isVisible, onClose, onConfirm }) => {
     }
 
     return(
-        <div>
-            <div>
+        <div className="guest-modal">
+            <div className="guest-modal-content">
                 <h2> Number Of Guest</h2>
-                <button
-                onClick={ handleIncreaseGuest }
-                >
-                    +
-                </button>
-                <p>{numberOfGuest}</p>
-                <button
-                onClick={ handleDecreaseGuest }
-                >
-                    -
-                </button>
-
+                <div className="guest-control">
+                    <button onClick={ handleDecreaseGuest } className="guest-button"> - </button>
+                    <p className="guest-number">{numberOfGuest}</p>
+                    <button onClick={ handleIncreaseGuest } className="guest-button"> + </button>
+                </div>
             </div>
-
-                <button
-                onClick={ handleConfirmGuest }
-                >
-                    Confirm
-                </button>
+            <button onClick={ handleConfirmGuest } className="confirm-guest-button">
+                Confirm
+            </button>
         </div>
     )
 }; 

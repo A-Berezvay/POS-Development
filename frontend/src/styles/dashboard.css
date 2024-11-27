@@ -1,5 +1,3 @@
-/* Dashboard.css - Advanced styling for the POS Dashboard service view */
-
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -72,6 +70,24 @@ h2 {
 .table.waiting-for-payment {
   border: 3px solid #ff9800; /* Orange for waiting for payment */
 }
+
+.table.occupied .guest-count,
+.table.waiting-for-payment .guest-count {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background-color: #ffeb3b; /* Yellow badge for visibility */
+  color: #111c26; /* Dark text for readability */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
 
 button {
   background-color: blue;

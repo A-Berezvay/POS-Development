@@ -4,10 +4,6 @@ import '../styles/GuestModal.css';
 const GuestModal = ({isVisible, onClose, onConfirm }) => {
     const [numberOfGuest, setNumberOfGuest] = useState(1);
 
-   const handleNumberOfGuest = (numberOfGuest) => {
-    setNumberOfGuest(numberOfGuest);
-   }
-
     const handleIncreaseGuest = () => {
         setNumberOfGuest((prev) => prev + 1);
     };

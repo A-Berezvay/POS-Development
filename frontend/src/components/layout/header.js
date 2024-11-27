@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faMagnifyingGlass, faCartShopping, faSterlingSign, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faMagnifyingGlass, faSterlingSign, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 
 const Header = ({ cart, onLogout, waiterName = 'John Doe' }) => {
@@ -12,8 +12,6 @@ const Header = ({ cart, onLogout, waiterName = 'John Doe' }) => {
   const handleTabClick = (route) => {
     navigate(route);
   };
-
-  const totalCartItems = Object.values(cart).reduce((total, tableItems) => total + tableItems.length, 0);
 
   const handleUserIconClick = () => {
     setShowLogoutMenu((prev) => !prev);

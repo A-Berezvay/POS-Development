@@ -139,11 +139,6 @@ function App() {
       return updatedCart;
     });
   
-    // Update table status
-    setTables(prevTables => prevTables.map(table =>
-      table.id === Number(tableId) ? { ...table, status: 'waiting-for-payment', waiter: table.waiter } : table
-    ));
-  
     // Hide the cart modal
     setIsCartModalVisible(false);
   };

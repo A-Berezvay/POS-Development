@@ -23,7 +23,7 @@ const Dashboard = ({ onAddToCart, tables, }) => {
     // Navigate to the Order Page for the selected table
     navigate(`/table/${selectedTable}/order`);
     }
-    
+
     setIsGuestModalVisible(false);
   };
 

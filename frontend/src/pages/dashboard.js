@@ -15,8 +15,6 @@ const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {
 
   return (
     <div className="dashboard-container">
-      <h2>Welcome to eMenu POS Dashboard</h2>
-
       {currentView === 'service' && !selectedTable && (
         <div className="tables-container">
           {tables.map((table) => (
@@ -25,7 +23,7 @@ const Dashboard = ({ onAddToCart, tables, onOpenTable }) => {
               {table.status === 'free' ? (
                 <button onClick={() => handleOpenTable(table.id)}>Open Table</button>
               ) : (
-                <button onClick={() => handleOpenTable(table.id)}>Add Items</button>
+                <button onClick={() => handleOpenTable(table.id)}>Pick Up Table</button>
               )}
               {table.status === 'occupied' && table.waiter && (
                 <p>Waiter: {table.waiter}</p> // Displaying the assigned waiter's name

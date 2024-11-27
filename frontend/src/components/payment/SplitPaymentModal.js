@@ -56,7 +56,7 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
           <FontAwesomeIcon icon={faXmark} className="split-payment-close" onClick={onClose} />
         </div>
         <div className="split-payment-body">
-          <p>Total Amount: £{totalAmount.toFixed(2)}</p>
+          <p className="total-amount">Total Amount: £{totalAmount.toFixed(2)}</p>
 
           <div className="split-options">
             <button onClick={handleSplitEvenly} className="split-evenly-button">
@@ -87,7 +87,7 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
 
           {splitType === 'evenly' && (
             <div className="split-evenly">
-              <p>Each guest will pay: £{(totalAmount / numberOfGuests).toFixed(2)}</p>
+              <p className="total-amount">Each guest will pay: £{(totalAmount / numberOfGuests).toFixed(2)}</p>
             </div>
           )}
 

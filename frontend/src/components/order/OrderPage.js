@@ -272,6 +272,7 @@ const OrderPage = ({ onAddToCart }) => {
                 >
                   Add to Cart
                 </button>
+                
                 <button
                   onClick={() => handleShowAllergens(item.allergens)}
                   className="allergen-button"

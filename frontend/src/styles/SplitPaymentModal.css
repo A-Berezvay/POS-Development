@@ -10,13 +10,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 50;
   }
   
   .split-payment-container {
     width: 90%;
-    max-width: 600px;
-    background: #fff;
+    height: 100%;
+    background: #484747;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 20px;
@@ -39,8 +39,13 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
+    margin-top: 65px;
     margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+
+  .total-amount{
+    
   }
   
   .split-payment-header h2 {
@@ -140,29 +145,5 @@
   
   .payment-button:hover {
     background: #0056b3;
-  }
-  
-  @media (max-width: 480px) {
-    .split-payment-container {
-      width: 95%;
-    }
-  
-    .payment-method-button {
-      margin: 5px 5px;
-      padding: 8px 10px;
-    }
-  
-    .split-payment-header h2 {
-      font-size: 1.25rem;
-    }
-  
-    .payment-button {
-      padding: 8px 15px;
-      font-size: 0.9rem;
-    }
-  
-    .split-payment-close {
-      font-size: 1.25rem;
-    }
   }
   

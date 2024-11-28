@@ -1,17 +1,14 @@
-/* Dashboard.css - Advanced styling for the POS Dashboard service view */
-
 .dashboard-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 60px 30px;
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #484747;
   min-height: 100vh;
 }
 
 h2 {
-  color: #333;
   margin-bottom: 20px;
 }
 
@@ -49,7 +46,7 @@ h2 {
 }
 
 .table {
-  background-color: #fff;
+  background-color: #484747;
   border-radius: 8px;
   padding: 15px;
   text-align: center;
@@ -74,6 +71,24 @@ h2 {
   border: 3px solid #ff9800; /* Orange for waiting for payment */
 }
 
+.table.occupied .guest-count,
+.table.waiting-for-payment .guest-count {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background-color: #ffeb3b; /* Yellow badge for visibility */
+  color: #111c26; /* Dark text for readability */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+
 button {
   background-color: blue;
   color: white;
@@ -91,7 +106,7 @@ button:hover {
 p {
   margin-top: 10px;
   font-weight: bold;
-  color: #555;
+  color: white;
 }
 
 @media (max-width: 600px) {
@@ -164,7 +179,7 @@ p {
 }
 
 .menu-item-card {
-  background-color: #fff;
+  background-color: #484747;
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -183,7 +198,7 @@ p {
 
 .menu-item-card p {
   margin-bottom: 10px;
-  color: #555;
+  color: white;
 }
 
 .menu-item-card button {

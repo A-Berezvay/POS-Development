@@ -1,0 +1,70 @@
+.guest-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .guest-modal-content {
+    width: 300px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .guest-modal-content h2{
+    color: black;
+  }
+  
+  .guest-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+  }
+  
+  .guest-button {
+    width: 40px;
+    height: 40px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .guest-button:hover {
+    background: #0056b3;
+  }
+  
+  .guest-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: black;
+  }
+  
+  .confirm-guest-button {
+    background: #4caf50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background 0.3s;
+  }
+  
+  .confirm-guest-button:hover {
+    background: #388e3c;
+  }
+  

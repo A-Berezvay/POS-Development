@@ -47,7 +47,7 @@ const drinksSubCategories = ['Wines', 'Beers', 'Spirits', 'Soft Drinks', 'Hot Dr
 const wineTypes = ['Red', 'White', 'Rose', 'Sparkling'];
 const wineSizes = ['125ml', '175ml', '250ml', 'bottle'];
 
-const OrderPage = ({ onAddToCart }) => {
+const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
   const { tableId } = useParams();
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
@@ -57,6 +57,19 @@ const OrderPage = ({ onAddToCart }) => {
   const [itemState, setItemState] = useState({});
   const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
   const [currentAllergens, setCurrentAllergens] = useState([]);
+
+  //Fetch existing orders for the table
+  const existingOrders = ordersReadyForPayment[tableId] || [];
+
+  //Calculate the total amount for the table
+  const getTotalAmount = (tableId) => {
+    const ordersForTable = ordersReadyForPayment[tableId] || [];
+    return ordersForTable.reduce((total, item) => {
+      const price = parseFloat(item.price) || 0;
+      const quantity = item.quantity || 1;
+      return total + price * quantity;
+    }, 0);
+  };
 
   const handleMainCategoryClick = (category) => {
     setSelectedMainCategory(category.toLowerCase());
@@ -155,7 +168,35 @@ const OrderPage = ({ onAddToCart }) => {
 
   return (
     <div className="order-page-container">
-      <h2>Table {tableId} - Order</h2>
+      <div className="ordered-items-heading">
+        <div>
+          <h2>Table</h2>
+          <span>{tableId}</span>
+        </div>
+        <div>
+          <h2>Number of Guests</h2>
+          <span>N/A</span>
+        </div>
+      </div>
+
+
+      {/* Display existing orders at the Top */}
+      {existingOrders.length > 0 && (
+        <div className="existing-orders-section">
+          <h3>Existing Orders</h3>
+          <div className="existing-orders-list">
+            {existingOrders.map((orderItem) => (
+              <div key={orderItem.id} className="existing-order-item">
+                <span>{orderItem.quantity}x</span>
+                <span>{orderItem.name}</span>
+                <span>£{orderItem.price}</span>
+                {orderItem.note && <span>Note: {orderItem.note}</span>}
+              </div>
+            ))}
+            <span className="total-amount">£{getTotalAmount(tableId).toFixed(2)}</span>
+          </div>
+        </div>
+      )}
       <div className="category-buttons-container">
         {mainCategories.map((category) => (
           <button

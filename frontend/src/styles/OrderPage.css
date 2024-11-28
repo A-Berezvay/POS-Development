@@ -8,6 +8,48 @@
   text-align: center;
 }
 
+/* Existing Order Display */
+
+.ordered-items-heading{
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.ordered-items-heading div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ordered-items-heading div span{
+  font-weight: 900;
+  font-size: 1.5em;
+  color: white;
+}
+
+.existing-order-item{
+  color: white;
+  display: flex;
+  font-size: 1.25em;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.existing-order-item span{
+  margin: 10px 20px;
+}
+
+.total-amount{
+  border-top: 1px solid white;
+  display: flex;
+  color: white;
+  justify-content: flex-end;
+  margin: 0 20px;
+  padding: 20px 0;
+}
+
 .cart-item {
   display: flex;
   justify-content: space-between;

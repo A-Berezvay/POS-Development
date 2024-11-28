@@ -183,7 +183,7 @@ function App() {
         {isAuthenticated && (
           <>
             <Route path="/dashboard" element={<Dashboard tables={tables} onAddToCart={addItemToCart} />} />
-            <Route path="/table/:tableId/order" element={<OrderPage onAddToCart={addItemToCart} />} />
+            <Route path="/table/:tableId/order" element={<OrderPage onAddToCart={addItemToCart} ordersReadyForPayment={ordersReadyForPayment} />} />
             <Route 
               path="/payment" 
               element={

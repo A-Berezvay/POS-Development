@@ -8,35 +8,6 @@
   min-height: 100vh;
 }
 
-h2 {
-  margin-bottom: 20px;
-}
-
-.tabs-container {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.tab-button {
-  flex: 1;
-  padding: 10px;
-  margin: 0 5px;
-  background-color: #61788c;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.tab-button.active {
-  background-color: #111c26;
-  font-weight: bold;
-}
-
-.tab-button:hover {
-  background-color: #bf8c80;
-}
-
 .tables-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -46,6 +17,7 @@ h2 {
 }
 
 .table {
+  position: relative;
   background-color: #484747;
   border-radius: 8px;
   padding: 15px;
@@ -71,13 +43,11 @@ h2 {
   border: 3px solid #ff9800; /* Orange for waiting for payment */
 }
 
-.table.occupied .guest-count,
-.table.waiting-for-payment .guest-count {
+.guest-count {
   position: absolute;
-  top: 5px;
-  right: 10px;
-  background-color: #ffeb3b; /* Yellow badge for visibility */
-  color: #111c26; /* Dark text for readability */
+  top: 20px;
+  right: 20px;
+  color: white;
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -87,7 +57,6 @@ h2 {
   font-weight: bold;
   font-size: 1rem;
 }
-
 
 button {
   background-color: blue;
@@ -113,156 +82,6 @@ p {
   .tables-container {
     grid-template-columns: 1fr;
   }
-}
-
-/* Menu Management */
-
-.menu-management-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 900px;
-  margin-top: 20px;
-}
-
-.add-item-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-bottom: 20px;
-}
-
-.add-item-button:hover {
-  background-color: #218838;
-}
-
-.category-tabs-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.category-tab {
-  margin: 0 10px;
-  padding: 10px;
-  background-color: #61788c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.category-tab.active {
-  background-color: #111c26;
-  font-weight: bold;
-}
-
-.category-tab:hover {
-  background-color: #bf8c80;
-}
-
-.menu-items-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  width: 100%;
-}
-
-.menu-item-card {
-  background-color: #484747;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.menu-item-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.menu-item-card h3 {
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.menu-item-card p {
-  margin-bottom: 10px;
-  color: white;
-}
-
-.menu-item-card button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 5px;
-  transition: background-color 0.3s;
-}
-
-.menu-item-card button:hover {
-  background-color: #0056b3;
-}
-
-.add-menu-item-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 500px;
-}
-
-.add-menu-item-form input,
-.add-menu-item-form select,
-.add-menu-item-form textarea {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 100%;
-}
-
-.add-menu-item-form button[type="submit"] {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.add-menu-item-form button[type="submit"]:hover {
-  background-color: #218838;
-}
-
-.add-menu-item-form button[type="button"] {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.add-menu-item-form button[type="button"]:hover {
-  background-color: #c82333;
 }
 
 

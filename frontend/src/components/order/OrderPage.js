@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import AllergenModal from './AllergenModal';
 import '../../styles/OrderPage.css';
 
@@ -49,6 +49,9 @@ const wineSizes = ['125ml', '175ml', '250ml', 'bottle'];
 
 const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
   const { tableId } = useParams();
+  const location = useLocation();
+  const numberOfGuests = location.state?.numberOfGuests || 1;
+
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedWineType, setSelectedWineType] = useState(null);
@@ -175,7 +178,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
         </div>
         <div>
           <h2>Number of Guests</h2>
-          <span>N/A</span>
+          <span>{numberOfGuests}</span>
         </div>
       </div>
 
@@ -187,10 +190,14 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
           <div className="existing-orders-list">
             {existingOrders.map((orderItem) => (
               <div key={orderItem.id} className="existing-order-item">
-                <span>{orderItem.quantity}x</span>
-                <span>{orderItem.name}</span>
-                <span>£{orderItem.price}</span>
-                {orderItem.note && <span>Note: {orderItem.note}</span>}
+                <div className="order-items">
+                  <span>{orderItem.quantity}x</span>
+                  <span>{orderItem.name}</span>
+                  <span>£{orderItem.price}</span>
+                </div>
+                <div className="item-note">
+                  {orderItem.note && <span>Note: {orderItem.note}</span>}
+                </div>
               </div>
             ))}
             <span className="total-amount">£{getTotalAmount(tableId).toFixed(2)}</span>

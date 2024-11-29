@@ -1,40 +1,55 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import '../styles/dashboard.css'; // Assuming there's some basic styling to differentiate the areas of the app
+import { useNavigate } from 'react-router-dom';
+import '../styles/dashboard.css';
 import GuestModal from './GuestModal';
 import OrderPage from '../components/order/OrderPage';
 
-const Dashboard = ({ onAddToCart, tables, }) => {
+const Dashboard = ({ onAddToCart, tables, setTables }) => {
   const [currentView, setCurrentView] = useState('service');
   const [selectedTable, setSelectedTable] = useState(null);
   const [isGuestModalVisible, setIsGuestModalVisible] = useState(false);
-  const [numberOfGuest, setNumberOfGuest] = useState(1);
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const handleOpenTable = (tableId) => {
-    // Enter the number of guest into the window
-    setIsGuestModalVisible(true);
-    setSelectedTable(tableId);
+    const table = tables.find((t) => t.id === tableId);
+
+    // Only ask for number of guests if it's the first time the table is being opened
+    if (table.status === 'free' && table.numberOfGuests === null) {
+      setSelectedTable(tableId);
+      setIsGuestModalVisible(true);
+    } else {
+      // Navigate to the order page if the table is already occupied
+      navigate(`/table/${tableId}/order`, { state: { numberOfGuests: table.numberOfGuests } });
+    }
   };
 
   const handleConfirmGuest = (numGuest) => {
-    setNumberOfGuest(numGuest)
-    if (selectedTable) {
-    // Navigate to the Order Page for the selected table
-    navigate(`/table/${selectedTable}/order`);
-    }
+    //Update the tables with the new number of guests
+    setTables((prevTables) =>
+      prevTables.map((table) =>
+        table.id === selectedTable
+          ? { ...table, numberOfGuests: numGuest, status: 'occupied' }
+          : table
+      )
+    );
 
+    // Now navigate to the Order Page after confirming the number of guests
+    navigate(`/table/${selectedTable}/order`, { state: { numberOfGuests: numGuest } });
+
+    // Hide the guest modal
     setIsGuestModalVisible(false);
   };
 
-
   return (
     <div className="dashboard-container">
-      {currentView === 'service' && !selectedTable && (
+      {currentView === 'service' && (
         <div className="tables-container">
           {tables.map((table) => (
             <div key={table.id} className={`table ${table.status}`}>
               <h3>Table {table.id}</h3>
+              {table.numberOfGuests !== null && (
+                <span className="guest-count">Guests: {table.numberOfGuests}</span>
+              )}
               {table.status === 'free' ? (
                 <button onClick={() => handleOpenTable(table.id)}>Open Table</button>
               ) : (
@@ -55,15 +70,18 @@ const Dashboard = ({ onAddToCart, tables, }) => {
         />
       )}
 
-      <GuestModal
-        isVisible={isGuestModalVisible}
-        onConfirm={handleConfirmGuest}
-      />
+      {isGuestModalVisible && (
+        <GuestModal
+          isVisible={isGuestModalVisible}
+          onConfirm={handleConfirmGuest}
+        />
+      )}
     </div>
   );
 };
 
 export default Dashboard;
+
 
 
 

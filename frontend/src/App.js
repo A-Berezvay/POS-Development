@@ -6,7 +6,7 @@ import OrderPage from './components/order/OrderPage';
 import Header from './components/layout/header';
 import CartModal from './components/cart/CartModal';
 import PaymentProcessingPage from './components/payment/PaymentProcessingPage';
-import SplitPaymentModal from './components/payment/SplitPaymentModal'; // Import SplitPaymentModal
+import SplitPaymentModal from './components/payment/SplitPaymentModal';
 
 function App() {
   // State to track if the user is authenticated
@@ -14,9 +14,9 @@ function App() {
   const [cart, setCart] = useState({});
   const [ordersReadyForPayment, setOrdersReadyForPayment] = useState({});
   const [tables, setTables] = useState([
-    { id: 1, status: 'free', waiter: null },
-    { id: 2, status: 'free', waiter: null },
-    { id: 3, status: 'free', waiter: null },
+    { id: 1, status: 'free', waiter: null, numberOfGuests: null },
+    { id: 2, status: 'free', waiter: null, numberOfGuests: null },
+    { id: 3, status: 'free', waiter: null, numberOfGuests: null },
     // Add more tables as needed
   ]);
   const [isCartModalVisible, setIsCartModalVisible] = useState(false);
@@ -81,7 +81,7 @@ function App() {
         delete updatedCart[tableId];
         setTables((prevTables) =>
           prevTables.map((table) =>
-            table.id === Number(tableId) ? { ...table, status: 'free', waiter: null } : table
+            table.id === Number(tableId) ? { ...table, status: 'free', waiter: null, numberOfGuests: null } : table
           )
         );
 
@@ -155,7 +155,7 @@ function App() {
     // Update the table status to 'free' after payment is made
     setTables((prevTables) =>
       prevTables.map((table) =>
-        table.id === Number(tableId) ? { ...table, status: 'free', waiter: null } : table
+        table.id === Number(tableId) ? { ...table, status: 'free', waiter: null, numberOfGuests: null } : table
       )
     );
   };
@@ -182,15 +182,15 @@ function App() {
         <Route path='/' element={<LoginPage onLogin={handleLogin} />} />
         {isAuthenticated && (
           <>
-            <Route path="/dashboard" element={<Dashboard tables={tables} onAddToCart={addItemToCart} />} />
-            <Route path="/table/:tableId/order" element={<OrderPage onAddToCart={addItemToCart} ordersReadyForPayment={ordersReadyForPayment} />} />
+            <Route path="/dashboard" element={<Dashboard tables={tables} setTables={setTables} onAddToCart={addItemToCart} />} />
+            <Route path="/table/:tableId/order" element={<OrderPage setTables={setTables} onAddToCart={addItemToCart} ordersReadyForPayment={ordersReadyForPayment} />} />
             <Route 
               path="/payment" 
               element={
                 <PaymentProcessingPage 
                   ordersReadyForPayment={ordersReadyForPayment} 
                   onPayment={handlePayment}
-                  onSplitPayment={openSplitPaymentModal} // Pass function to open split payment modal
+                  onSplitPayment={openSplitPaymentModal}
                 />
               } 
             />
@@ -219,3 +219,4 @@ function App() {
 }
 
 export default App;
+

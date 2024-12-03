@@ -31,8 +31,8 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
   };
 
   const handleSendToKitchen = (tableId) => {
-    const updatedCart = {...cart };
-
+    const updatedCart = { ...cart };
+  
     updatedCart[tableId] = updatedCart[tableId].map((item) => {
       if (selectedOptions[item.id]) {
         return {
@@ -42,9 +42,10 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
       }
       return item;
     });
-
-    onSendToKitchen(tableId, updatedCart[tableId]); 
+  
+    onSendToKitchen(tableId, updatedCart[tableId]);
   };
+  
 
   if (!isVisible) {
     return null; // Don't render anything if the modal is not visible
@@ -62,46 +63,22 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
             <div key={tableId} className="table-cart">
               <h3>Table {tableId}</h3>
               {cart[tableId].map((item) => (
-                <div key={item.id} className="cart-item">
+                <div key={`${item.id}-${item.modifier?.cooking || ''}-${item.modifier?.sauce || ''}`} className="cart-item">
                   <div className="cart-item-details">
                     <span>{item.name}</span>
 
-                    {/* Display cooking method and sauce options for "Steak Fillet" (id 13) */}
-                    {item.id === 13 && (
-                      <>
-                        <div className="option-group">
-                          <strong>Cooking Method:</strong>
-                          <div className="option-buttons">
-                            {Modifiers.cookingMethods.map((method) => (
-                              <button
-                                key={method}
-                                className={`option-button ${
-                                  selectedOptions[item.id]?.cooking === method ? 'selected' : ''
-                                }`}
-                                onClick={() => handleOptionChange(item.id, 'cooking', method)}
-                              >
-                                {method}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="option-group">
-                          <strong>Sauce:</strong>
-                          <div className="option-buttons">
-                            {Modifiers.sauces.map((sauce) => (
-                              <button
-                                key={sauce}
-                                className={`option-button ${
-                                  selectedOptions[item.id]?.sauce === sauce ? 'selected' : ''
-                                }`}
-                                onClick={() => handleOptionChange(item.id, 'sauce', sauce)}
-                              >
-                                {sauce}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </>
+                    {/* Display Cooking Method */}
+                    {item.modifier?.cooking && (
+                      <div className="item-note">
+                        <strong>Cooking Method:</strong> {item.modifier.cooking}
+                      </div>
+                    )}
+
+                    {/* Display Sauce */}
+                    {item.modifier?.sauce && (
+                      <div className="item-note">
+                        <strong>Sauce:</strong> {item.modifier.sauce}
+                      </div>
                     )}
 
                     <button
@@ -111,19 +88,6 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
                       View Allergens
                     </button>
                     {item.note && <div className="item-note"><strong>Note:</strong> {item.note}</div>}
-
-                    {/* Display selected cooking method and sauce under the item */}
-                    {selectedOptions[item.id]?.cooking && (
-                      <div className="item-note">
-                        <strong>Cooking Method:</strong> {selectedOptions[item.id].cooking}
-                      </div>
-                    )}
-                    {selectedOptions[item.id]?.sauce && (
-                      <div className="item-note">
-                        <strong>Sauce:</strong> {selectedOptions[item.id].sauce}
-                      </div>
-                    )}
-                
                   </div>
                   <div className="quantity-control">
                     <button onClick={() => onUpdateQuantity(tableId, item.id, -1)} className="quantity-button">-</button>
@@ -135,6 +99,7 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
                   </button>
                 </div>
               ))}
+
               <button onClick={() => onSendToKitchen(tableId)} className="send-to-kitchen-button">
                 Send Order to Kitchen
               </button>

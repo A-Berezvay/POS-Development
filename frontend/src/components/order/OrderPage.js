@@ -2,44 +2,10 @@ import React, { useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import AllergenModal from './AllergenModal';
 import '../../styles/OrderPage.css';
+import Modifiers from './Modifiers';
+import menuItems from './MenuItems';
 
-const menuItems = [
 
-  // Starters
-  { id: 1, name: 'Spelt Cavatelli', category: 'starters', price: 7, allergens: { contains: ['Gluten'], mayContain: ['Nuts'], removable: ['Cheese']}},
-  { id: 2, name: 'Potato and Tarragon Veloute', category: 'starters', price: 6 },
-  { id: 3, name: 'Smoked River Trout', category: 'starters', price: 8 },
-  { id: 4, name: 'Roasted Pork Neck', category: 'starters', price: 10 },
-  { id: 5, name: 'Soup of The Day', category: 'starters', price: 5 },
-  { id: 6, name: 'Charred Leek, Onion Puree', category: 'starters', price: 9 },
-  
-  // Mains
-  { id: 7, name: 'Roast Cornish Hake', category: 'mains', price: 15 },
-  { id: 8, name: 'Fish & Chips', category: 'mains', price: 15 },
-  { id: 9, name: 'Baked Megrim Sole', category: 'mains', price: 15 },
-  { id: 10, name: 'Chew Valley Pork', category: 'mains', price: 15 },
-  { id: 11, name: 'Potato Dumplings', category: 'mains', price: 15 },
-  { id: 12, name: 'Beef Burger', category: 'mains', price: 15 },
-  { id: 13, name: 'Steak Fillet', category: 'mains', price: 15 },
-  { id: 14, name: 'Club Sandwich', category: 'mains', price: 15 },
-  
-  // Sides 
-  { id: 15, name: 'Triple Cooked Schips', category: 'sides', price: 4 },
-  { id: 16, name: 'Skin On Fries', category: 'sides', price: 3.5 },
-  { id: 17, name: 'Charred Hispi Cabbage', category: 'sides', price: 4.5 },
-  
-  // Desserts
-  { id: 18, name: 'Sticky Toffee Pudding', category: 'desserts', price: 6.5 },
-  { id: 19, name: 'Brown Butter Fraingipane', category: 'desserts', price: 7.5 },
-  { id: 20, name: 'Dark Chocolate Mousse', category: 'desserts', price: 8 },
-  { id: 21, name: 'Artisan Cheeses', category: 'desserts', price: 9.5 },
-  { id: 22, name: 'Vanilla Ice Cream', category: 'desserts', price: 6 },
-
-  //Wines: Red, White, Rose
-  { id: 23, name: 'Sancerre Sauvignon Blanc', category: 'white', price: { '125ml': 6, '175ml': 8, '250ml': 10, 'bottle': 35 } },
-  { id: 24, name: 'Catena Malbec', category: 'red', price: { '125ml': 7, '175ml': 9, '250ml': 12, 'bottle': 40 } },
-  { id: 25, name: 'Whispering Angel', category: 'rose', price: { '125ml': 8, '175ml': 10, '250ml': 13, 'bottle': 45 } },
-];
 
 const mainCategories = ['Food', 'Drinks'];
 const foodSubCategories = ['Starters', 'Mains', 'Sides', 'Desserts'];
@@ -74,6 +40,19 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
     }, 0);
   };
 
+  const handleModifierSelect = (itemId, modifierType, value) => {
+    setItemState((prevState) => ({
+      ...prevState,
+      [itemId]: {
+        ...prevState[itemId],
+        modifier: {
+          ...prevState[itemId]?.modifier,
+          [modifierType]: value,
+        },
+      },
+    }));
+  };
+
   const handleMainCategoryClick = (category) => {
     setSelectedMainCategory(category.toLowerCase());
     setSelectedSubCategory(null);
@@ -104,24 +83,22 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
   const handleAddToCart = (item) => {
     let price;
   
-    // Determine the correct price if it's a wine with different sizes
     if (typeof item.price === 'object' && selectedWineSize) {
-      price = parseFloat(item.price[selectedWineSize]) || 0; // Parse wine price based on selected size
-    } 
-    // Handle food items with fixed price
-    else if (typeof item.price === 'number') {
-      price = item.price; // Use the item's numeric price directly
+      price = parseFloat(item.price[selectedWineSize]) || 0;
+    } else if (typeof item.price === 'number') {
+      price = item.price;
     } else {
-      price = 0; // Fallback (should rarely be hit)
+      price = 0;
     }
   
     // Create a new item object to add to the cart
     const newItem = {
       ...item,
-      size: selectedWineSize || '', // Add size if applicable
-      quantity: itemState[item.id]?.quantity || 1, // Set quantity
-      note: itemState[item.id]?.note || '', // Add note if applicable
-      price: parseFloat(price).toFixed(2), // Set price explicitly as a number
+      size: selectedWineSize || '',
+      quantity: itemState[item.id]?.quantity || 1,
+      note: itemState[item.id]?.note || '',
+      modifier: itemState[item.id]?.modifier || {}, // Add modifier if applicable
+      price: parseFloat(price).toFixed(2),
     };
   
     // Add the new item to the cart
@@ -133,9 +110,11 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
       [item.id]: {
         quantity: 1,
         note: '',
+        modifier: {},
       },
     }));
   };
+  
   
   
 
@@ -301,6 +280,40 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
                       : 'Select a size'
                     : item.price}
                 </p>
+                 {/* Steak Fillet Modifier Options */}
+      {item.id === 13 && (
+        <>
+          <div className="modifier-section">
+            <h5>Cooking Method</h5>
+            <div className="modifier-buttons">
+              {Modifiers.cookingMethods.map((method) => (
+                <button
+                  key={method}
+                  onClick={() => handleModifierSelect(item.id, 'cooking', method)}
+                  className={`modifier-button ${itemState[item.id]?.modifier?.cooking === method ? 'selected' : ''}`}
+                >
+                  {method}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="modifier-section">
+            <h5>Sauce</h5>
+            <div className="modifier-buttons">
+              {Modifiers.sauces.map((sauce) => (
+                <button
+                  key={sauce}
+                  onClick={() => handleModifierSelect(item.id, 'sauce', sauce)}
+                  className={`modifier-button ${itemState[item.id]?.modifier?.sauce === sauce ? 'selected' : ''}`}
+                >
+                  {sauce}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
                 <div className="quantity-control">
                   <button onClick={() => handleDecreaseQuantity(item.id)} className="quantity-button">-</button>
                   <span className="quantity-display">{itemState[item.id]?.quantity || 1}</span>

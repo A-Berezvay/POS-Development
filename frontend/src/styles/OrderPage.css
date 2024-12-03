@@ -43,13 +43,6 @@
   justify-content: space-between;
 }
 
-.item-note{
-  padding: 30px;
-  color: white;
-  margin: 0 20px;
-  border-radius: 10px;
-}
-
 .existing-order-item span{
   margin: 10px 20px;
 }
@@ -95,6 +88,25 @@
   margin-bottom: 300px;
 }
 
+.menu-item-card{
+  padding: 20px 15px;
+  border-top: 1px solid white;
+}
+
+.action-buttons{
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row-reverse;
+  padding-top: 30px;
+}
+
+.item-notes{
+  padding-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Order category buttons*/
 
 .category-button {
@@ -135,6 +147,7 @@
 .quantity-control {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin: 10px 0;
 }
 

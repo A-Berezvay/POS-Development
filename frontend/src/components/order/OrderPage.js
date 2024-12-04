@@ -5,8 +5,6 @@ import '../../styles/OrderPage.css';
 import Modifiers from './Modifiers';
 import menuItems from './MenuItems';
 
-
-
 const mainCategories = ['Food', 'Drinks'];
 const foodSubCategories = ['Starters', 'Mains', 'Sides', 'Desserts'];
 const drinksSubCategories = ['Wines', 'Beers', 'Spirits', 'Soft Drinks', 'Hot Drinks'];
@@ -22,67 +20,49 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedWineType, setSelectedWineType] = useState(null);
   const [selectedWineSize, setSelectedWineSize] = useState(null);
-  const [cart] = useState([]);
   const [itemState, setItemState] = useState({});
   const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
-  const [currentAllergens, setCurrentAllergens] = useState([]);
+  const [currentItemId, setCurrentItemId] = useState(null);
 
-  //Fetch existing orders for the table
+  // Fetch existing orders for the table
   const existingOrders = ordersReadyForPayment[tableId] || [];
 
-  //Calculate the total amount for the table
-  const getTotalAmount = (tableId) => {
-    const ordersForTable = ordersReadyForPayment[tableId] || [];
-    return ordersForTable.reduce((total, item) => {
-      const price = parseFloat(item.price) || 0;
-      const quantity = item.quantity || 1;
-      return total + price * quantity;
-    }, 0);
-  };
-
   const handleModifierSelect = (itemId, modifierType, value) => {
-    setItemState((prevState) => ({
-      ...prevState,
-      [itemId]: {
-        ...prevState[itemId],
-        modifier: {
-          ...prevState[itemId]?.modifier,
-          [modifierType]: value,
+    setItemState((prevState) => {
+      const updatedModifier = {
+        ...prevState[itemId]?.modifier,
+        [modifierType]: value,
+      };
+
+      // Update note string based on selected modifiers
+      let note = prevState[itemId]?.note || '';
+      if (updatedModifier.cooking) note += `${updatedModifier.cooking}, `;
+      if (updatedModifier.sauce) note += `${updatedModifier.sauce}, `;
+
+      // Remove trailing comma and space
+      note = note.trim().replace(/,$/, '');
+
+      return {
+        ...prevState,
+        [itemId]: {
+          ...prevState[itemId],
+          modifier: updatedModifier,
+          note: note,
         },
-      },
-    }));
-  };
-
-  const handleMainCategoryClick = (category) => {
-    setSelectedMainCategory(category.toLowerCase());
-    setSelectedSubCategory(null);
-  };
-
-  const handleSubCategoryClick = (subCategory) => {
-    setSelectedSubCategory(subCategory.toLowerCase());
-  };
-
-  const handleWineTypeClick = (type) => {
-    setSelectedWineType (type.toLowerCase());
-  };
-
-  const handleWineSizeClick = (size) => {
-    setSelectedWineSize (size);
-  };  
-
-  const handleShowAllergens = (allergens) => {
-    setCurrentAllergens(allergens);
-    setIsAllergenModalVisible(true);
-  };
-
-  const handleCloseAllergens = () => {
-    setIsAllergenModalVisible(false);
-    setCurrentAllergens([]);
+      };
+    });
   };
 
   const handleAddToCart = (item) => {
+    const { modifier, note } = itemState[item.id] || {};
+
+    // Ensure that the cooking method is selected before adding to cart
+    if (item.id === 13 && (!modifier || !modifier.cooking)) {
+      alert("Please select a cooking method for the Steak Fillet before adding to the cart.");
+      return;
+    }
+
     let price;
-  
     if (typeof item.price === 'object' && selectedWineSize) {
       price = parseFloat(item.price[selectedWineSize]) || 0;
     } else if (typeof item.price === 'number') {
@@ -90,20 +70,20 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
     } else {
       price = 0;
     }
-  
+
     // Create a new item object to add to the cart
     const newItem = {
       ...item,
       size: selectedWineSize || '',
       quantity: itemState[item.id]?.quantity || 1,
-      note: itemState[item.id]?.note || '',
-      modifier: itemState[item.id]?.modifier || {}, // Add modifier if applicable
+      note: note || '',
+      modifier: modifier || {}, // Add modifier if applicable
       price: parseFloat(price).toFixed(2),
     };
-  
+
     // Add the new item to the cart
     onAddToCart(tableId, newItem);
-  
+
     // Reset item state
     setItemState((prevState) => ({
       ...prevState,
@@ -111,13 +91,52 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
         quantity: 1,
         note: '',
         modifier: {},
+        allergens: [],
       },
     }));
   };
-  
-  
-  
 
+  const handleShowAllergens = (allergens, itemId) => {
+    setIsAllergenModalVisible(true);
+    setCurrentItemId(itemId);
+  };
+
+  const handleCloseAllergens = () => {
+    setIsAllergenModalVisible(false);
+    setCurrentItemId(null);
+  };
+
+  const handleConfirmAllergens = (selectedAllergens) => {
+    setItemState((prevState) => {
+      const currentItem = prevState[currentItemId] || {};
+      const existingNote = currentItem.note || '';
+
+      // Update note to include allergens
+      let updatedNote = existingNote;
+      selectedAllergens.forEach((allergen) => {
+        if (!updatedNote.includes(allergen)) {
+          updatedNote += `${allergen}, `;
+        }
+      });
+
+      // Remove trailing comma and space
+      updatedNote = updatedNote.trim().replace(/,$/, '');
+
+      return {
+        ...prevState,
+        [currentItemId]: {
+          ...currentItem,
+          allergens: selectedAllergens,
+          note: updatedNote,
+        },
+      };
+    });
+
+    // Close the modal after confirming
+    handleCloseAllergens();
+  };
+
+  // Handle quantity increase
   const handleIncreaseQuantity = (itemId) => {
     setItemState((prevState) => ({
       ...prevState,
@@ -128,6 +147,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
     }));
   };
 
+  // Handle quantity decrease
   const handleDecreaseQuantity = (itemId) => {
     setItemState((prevState) => ({
       ...prevState,
@@ -138,6 +158,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
     }));
   };
 
+  // Handle note changes
   const handleNotesChange = (itemId, event) => {
     setItemState((prevState) => ({
       ...prevState,
@@ -146,6 +167,26 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
         note: event.target.value,
       },
     }));
+  };
+
+  // Handle main category click
+  const handleMainCategoryClick = (category) => {
+    setSelectedMainCategory(category.toLowerCase());
+    setSelectedSubCategory(null);
+  };
+
+  // Handle subcategory click
+  const handleSubCategoryClick = (subCategory) => {
+    setSelectedSubCategory(subCategory.toLowerCase());
+  };
+
+  // Handle wine type and size click
+  const handleWineTypeClick = (type) => {
+    setSelectedWineType(type.toLowerCase());
+  };
+
+  const handleWineSizeClick = (size) => {
+    setSelectedWineSize(size);
   };
 
   return (
@@ -161,28 +202,21 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
         </div>
       </div>
 
-
-      {/* Display existing orders at the Top */}
-      {existingOrders.length > 0 && (
-        <div className="existing-orders-section">
-          <h3>Existing Orders</h3>
-          <div className="existing-orders-list">
-            {existingOrders.map((orderItem) => (
-              <div key={orderItem.id} className="existing-order-item">
-                <div className="order-items">
-                  <span>{orderItem.quantity}x</span>
-                  <span>{orderItem.name}</span>
-                  <span>£{orderItem.price}</span>
-                </div>
-                <div className="item-note">
-                  {orderItem.note && <span>Note: {orderItem.note}</span>}
-                </div>
-              </div>
-            ))}
-            <span className="total-amount">£{getTotalAmount(tableId).toFixed(2)}</span>
+      {/* Display existing orders */}
+      {existingOrders.map((orderItem, index) => (
+        <div key={`${orderItem.id}-${index}-${orderItem.note}-${JSON.stringify(orderItem.modifier)}`} className="existing-order-item">
+          <div className="order-items">
+            <span>{orderItem.quantity}x</span>
+            <span>{orderItem.name}</span>
+            <span>£{orderItem.price}</span>
+          </div>
+          <div className="item-note">
+            {orderItem.note && <span>Note: {orderItem.note}</span>}
           </div>
         </div>
-      )}
+      ))}
+
+      {/* Main Category Buttons */}
       <div className="category-buttons-container">
         {mainCategories.map((category) => (
           <button
@@ -195,6 +229,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
         ))}
       </div>
 
+      {/* Subcategory Buttons */}
       {selectedMainCategory === 'food' && (
         <div className="sub-category-buttons-container">
           {foodSubCategories.map((subCategory) => (
@@ -220,43 +255,17 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
               {subCategory}
             </button>
           ))}
-        </div>  
-      )}
-
-      {selectedSubCategory === 'wines' && (
-        <div className="wine-type-buttons-container">
-          {wineTypes.map((type) => (
-            <button
-              key={type}
-              onClick={() => handleWineTypeClick(type)}
-              className={`wine-type-button ${selectedWineType === type.toLowerCase() ? 'active' : ''}`}
-            >
-              {type}
-            </button>
-          ))}
         </div>
       )}
 
-      {selectedWineType && (selectedWineType === 'red' || selectedWineType === 'white' || selectedWineType === 'rose') && (
-        <div className="wine-size-buttons-container">
-          {wineSizes.map((size) => (
-            <button
-              key={size}
-              onClick={() => handleWineSizeClick(size)}
-              className={`wine-size-button ${selectedWineSize === size ? 'active' : ''}`}
-            >
-              {size}
-            </button>
-          ))}
-        </div>
-      )}
-
+      {/* Menu Items */}
       {(selectedMainCategory && (selectedSubCategory || selectedWineType)) && (
         <div className="menu-items-container">
           <h3>
             {selectedSubCategory
               ? selectedSubCategory.charAt(0).toUpperCase() + selectedSubCategory.slice(1)
-              : selectedWineType ? selectedWineType.charAt(0).toUpperCase() + selectedWineType.slice(1)
+              : selectedWineType
+              ? selectedWineType.charAt(0).toUpperCase() + selectedWineType.slice(1)
               : 'Items'}
           </h3>
           {menuItems
@@ -274,51 +283,56 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
               <div key={item.id} className="menu-item-card">
                 <h4>{item.name}</h4>
                 <p>
-                  Price: £{typeof item.price === 'object'
+                  Price: £
+                  {typeof item.price === 'object'
                     ? selectedWineSize
                       ? item.price[selectedWineSize]
                       : 'Select a size'
                     : item.price}
                 </p>
-                 {/* Steak Fillet Modifier Options */}
-      {item.id === 13 && (
-        <>
-          <div className="modifier-section">
-            <h5>Cooking Method</h5>
-            <div className="modifier-buttons">
-              {Modifiers.cookingMethods.map((method) => (
-                <button
-                  key={method}
-                  onClick={() => handleModifierSelect(item.id, 'cooking', method)}
-                  className={`modifier-button ${itemState[item.id]?.modifier?.cooking === method ? 'selected' : ''}`}
-                >
-                  {method}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          <div className="modifier-section">
-            <h5>Sauce</h5>
-            <div className="modifier-buttons">
-              {Modifiers.sauces.map((sauce) => (
-                <button
-                  key={sauce}
-                  onClick={() => handleModifierSelect(item.id, 'sauce', sauce)}
-                  className={`modifier-button ${itemState[item.id]?.modifier?.sauce === sauce ? 'selected' : ''}`}
-                >
-                  {sauce}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+                {/* Modifier Options */}
+                {item.id === 13 && (
+                  <>
+                    <div className="modifier-section">
+                      <h5>Cooking Method</h5>
+                      <div className="modifier-buttons">
+                        {Modifiers.cookingMethods.map((method) => (
+                          <button
+                            key={method}
+                            onClick={() => handleModifierSelect(item.id, 'cooking', method)}
+                            className={`modifier-button ${itemState[item.id]?.modifier?.cooking === method ? 'selected' : ''}`}
+                          >
+                            {method}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="modifier-section">
+                      <h5>Sauce</h5>
+                      <div className="modifier-buttons">
+                        {Modifiers.sauces.map((sauce) => (
+                          <button
+                            key={sauce}
+                            onClick={() => handleModifierSelect(item.id, 'sauce', sauce)}
+                            className={`modifier-button ${itemState[item.id]?.modifier?.sauce === sauce ? 'selected' : ''}`}
+                          >
+                            {sauce}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {/* Quantity Control */}
                 <div className="quantity-control">
                   <button onClick={() => handleDecreaseQuantity(item.id)} className="quantity-button">-</button>
                   <span className="quantity-display">{itemState[item.id]?.quantity || 1}</span>
                   <button onClick={() => handleIncreaseQuantity(item.id)} className="quantity-button">+</button>
                 </div>
+
+                {/* Notes Section */}
                 <label htmlFor={`notes-${item.id}`}>Notes: </label>
                 <input
                   id={`notes-${item.id}`}
@@ -327,44 +341,28 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
                   onChange={(event) => handleNotesChange(item.id, event)}
                   placeholder="Add notes (e.g., no ice)"
                 />
-                <button
-                  onClick={() => handleAddToCart(item)}
-                  className="add-to-cart-button"
-                >
-                  Add to Cart
-                </button>
                 
-                <button
-                  onClick={() => handleShowAllergens(item.allergens)}
-                  className="allergen-button"
-                >
-                  View Allergens
-                </button>
-
+                {/* Add to Cart & Allergens Buttons */}
+                <button onClick={() => handleAddToCart(item)} className="add-to-cart-button">Add to Cart</button>
+                <button onClick={() => handleShowAllergens(item.allergens, item.id)} className="allergen-button">View Allergens</button>
               </div>
             ))}
-
         </div>
       )}
 
-      {cart.length > 0 && (
-        <div className="cart-container">
-          <h3>Current Order</h3>
-          {cart.map((cartItem, index) => (
-            <div key={index} className="cart-item">
-              <span>{cartItem.name}</span> - <span>{cartItem.price} DKK</span> - <span>Qty: {cartItem.quantity}</span>
-              {cartItem.note && <span> (Note: {cartItem.note})</span>}
-            </div>
-          ))}
-        </div>
+      {/* Allergen Modal */}
+      {isAllergenModalVisible && (
+        <AllergenModal
+          isVisible={isAllergenModalVisible}
+          onClose={handleCloseAllergens}
+          onConfirmAllergens={handleConfirmAllergens}
+          selectedAllergens={itemState[currentItemId]?.allergens || []}
+        />
       )}
-      <AllergenModal
-        allergens={currentAllergens}
-        isVisible={isAllergenModalVisible}
-        onClose={handleCloseAllergens}
-      />
     </div>
   );
 };
 
 export default OrderPage;
+
+

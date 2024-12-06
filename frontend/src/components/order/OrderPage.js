@@ -10,8 +10,9 @@ const foodSubCategories = ['Starters', 'Mains', 'Sides', 'Desserts'];
 const drinksSubCategories = ['Wines', 'Beers', 'Spirits', 'Soft Drinks', 'Hot Drinks'];
 const wineTypes = ['Red', 'White', 'Rose', 'Sparkling'];
 const wineSizes = ['125ml', '175ml', '250ml', 'bottle'];
+const voidReasons = ['Customer Changed Mind', 'Wrong Order', 'Kitchen Error', 'Other'];
 
-const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
+const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) => {
   const { tableId } = useParams();
   const location = useLocation();
   const numberOfGuests = location.state?.numberOfGuests || 1;
@@ -24,6 +25,8 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
   const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
   const [currentAllergens, setCurrentAllergens] = useState([]);
   const [currentItemId, setCurrentItemId] = useState(null);
+  const [isVoidModalVisible, setIsVoidModalVisible] = useState(false);
+  const [itemToVoid, setItemToVoid] = useState(null);
 
   // Fetch existing orders for the table
   const existingOrders = ordersReadyForPayment[tableId] || [];
@@ -35,27 +38,18 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
         [modifierType]: value,
       };
 
-      // Update note string based on selected modifiers
-      let note = '';
-      if (updatedModifier.cooking) note += `${updatedModifier.cooking}, `;
-      if (updatedModifier.sauce) note += `${updatedModifier.sauce}, `;
-
-      // Remove trailing comma and space
-      note = note.trim().replace(/,$/, '');
-
       return {
         ...prevState,
         [itemId]: {
           ...prevState[itemId],
           modifier: updatedModifier,
-          note: note,
         },
       };
     });
   };
 
   const handleAddToCart = (item) => {
-    const { modifier, note } = itemState[item.id] || {};
+    const { modifier, note, allergens } = itemState[item.id] || {};
 
     // Ensure that the cooking method is selected before adding to cart
     if (item.id === 13 && (!modifier || !modifier.cooking)) {
@@ -79,6 +73,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
       quantity: itemState[item.id]?.quantity || 1,
       note: note || '',
       modifier: modifier || {}, // Add modifier if applicable
+      allergens: allergens || [], // Add allergens if applicable
       price: parseFloat(price).toFixed(2),
     };
 
@@ -92,11 +87,11 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
         quantity: 1,
         note: '',
         modifier: {},
+        allergens: [],
       },
     }));
   };
 
-  // Other functions remain unchanged
   const handleIncreaseQuantity = (itemId) => {
     setItemState((prevState) => ({
       ...prevState,
@@ -130,6 +125,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
   // Show and close allergen modal
   const handleShowAllergens = (allergens, itemId) => {
     setIsAllergenModalVisible(true);
+    setCurrentAllergens(allergens);
     setCurrentItemId(itemId);
   };
 
@@ -141,28 +137,33 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
   const handleConfirmAllergens = (selectedAllergens) => {
     setItemState((prevState) => {
       const currentItem = prevState[currentItemId] || {};
-      const existingNote = currentItem.note || '';
-
-      // Update note to include allergens
-      let updatedNote = existingNote;
-      selectedAllergens.forEach((allergen) => {
-        if (!updatedNote.includes(allergen)) {
-          updatedNote += `${allergen}, `;
-        }
-      });
-
-      // Remove trailing comma and space
-      updatedNote = updatedNote.trim().replace(/,$/, '');
 
       return {
         ...prevState,
         [currentItemId]: {
           ...currentItem,
           allergens: selectedAllergens,
-          note: updatedNote,
         },
       };
     });
+
+    setIsAllergenModalVisible(false); // Close the allergen modal after confirming
+  };
+
+  // Handle void item initiation
+  const handleVoidItemClick = (item) => {
+    setIsVoidModalVisible(true);
+    setItemToVoid(item);
+  };
+
+  const handleVoidReasonSelect = (reason) => {
+    if (itemToVoid) {
+      // Trigger the removal of the item from the existing orders
+      onRemoveOrderItem(tableId, itemToVoid.id, reason);
+      setItemToVoid(null);
+    }
+    // Close the void modal after selecting a reason
+    setIsVoidModalVisible(false);
   };
 
   // Handle main category click
@@ -205,14 +206,46 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
             <span>{orderItem.quantity}x</span>
             <span>{orderItem.name}</span>
             <span>£{orderItem.price}</span>
+            <button onClick={() => handleVoidItemClick(orderItem)} className="void-item-button">
+              x
+            </button>
           </div>
           <div className="item-note">
             {orderItem.note && <span>Note: {orderItem.note}</span>}
+            {orderItem.modifier && (
+              <div className="item-modifier">
+                <span>{orderItem.modifier.cooking && <li>{orderItem.modifier.cooking}</li>}</span>
+                <span>{orderItem.modifier.sauce && <li>{orderItem.modifier.sauce}</li>}</span>
+              </div>
+            )}
+            {orderItem.allergens?.length > 0 && (
+              <div className="item-allergens">
+                <strong>Allergens:</strong> {orderItem.allergens.join(', ')}
+              </div>
+            )}
           </div>
         </div>
       ))}
 
-
+      {/* Void Modal */}
+      {isVoidModalVisible && (
+        <div className="void-modal">
+          <div className="void-modal-content">
+            <h3>Void Item</h3>
+            <p>Select a reason for voiding this item:</p>
+            <div className="void-reason-buttons">
+              {voidReasons.map((reason) => (
+                <button key={reason} onClick={() => handleVoidReasonSelect(reason)}>
+                  {reason}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setIsVoidModalVisible(false)} className="close-void-modal">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Category Buttons */}
       <div className="category-buttons-container">
@@ -357,6 +390,15 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
                     </div>
                   </>
                 )}
+                {/* Display selected modifiers within the menu item card */}
+                <div className="selected-modifiers">
+                  {itemState[item.id]?.modifier?.cooking && (
+                    <div><strong>Cooking Method:</strong> {itemState[item.id].modifier.cooking}</div>
+                  )}
+                  {itemState[item.id]?.modifier?.sauce && (
+                    <div><strong>Sauce:</strong> {itemState[item.id].modifier.sauce}</div>
+                  )}
+                </div>
                 <div className="quantity-control">
                   <button onClick={() => handleDecreaseQuantity(item.id)} className="quantity-button">
                     -
@@ -377,7 +419,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
                 <button onClick={() => handleAddToCart(item)} className="add-to-cart-button">
                   Add to Cart
                 </button>
-                <button onClick={() => handleShowAllergens(item.allergens)} className="allergen-button">
+                <button onClick={() => handleShowAllergens(item.allergens, item.id)} className="allergen-button">
                   View Allergens
                 </button>
               </div>
@@ -394,9 +436,15 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment }) => {
           selectedAllergens={itemState[currentItemId]?.allergens || []}
         />
       )}
+
+
     </div>
   );
 };
 
 export default OrderPage;
+
+
+
+
 

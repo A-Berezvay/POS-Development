@@ -36,6 +36,7 @@
   font-size: 1.25em;
   justify-content: space-between;
   text-align: center;
+  border: 1px white solid;
 }
 
 .order-items{
@@ -45,6 +46,13 @@
 
 .existing-order-item span{
   margin: 10px 20px;
+}
+
+.item-modifier{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0 50px;
 }
 
 .total-amount{

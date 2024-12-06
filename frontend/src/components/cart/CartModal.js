@@ -1,52 +1,9 @@
 import React, { useState } from 'react';
-import AllergenModal from '../order/AllergenModal';
-import Modifiers from '../order/Modifiers';
 import '../../styles/CartModal.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, onSendToKitchen }) => {
-  const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
-  const [currentAllergens, setCurrentAllergens] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState({});
-
-  const handleShowAllergens = (allergens) => {
-    setCurrentAllergens(allergens);
-    setIsAllergenModalVisible(true);
-  };
-
-  const handleCloseAllergens = () => {
-    setIsAllergenModalVisible(false);
-    setCurrentAllergens([]);
-  };
-
-  const handleOptionChange = (itemId, optionType, value) => {
-    setSelectedOptions((prevOptions) => ({
-      ...prevOptions,
-      [itemId]: {
-        ...prevOptions[itemId],
-        [optionType]: value,
-      },
-    }));
-  };
-
-  const handleSendToKitchen = (tableId) => {
-    const updatedCart = { ...cart };
-  
-    updatedCart[tableId] = updatedCart[tableId].map((item) => {
-      if (selectedOptions[item.id]) {
-        return {
-          ...item,
-          modifiers: selectedOptions[item.id],
-        };
-      }
-      return item;
-    });
-  
-    onSendToKitchen(tableId, updatedCart[tableId]);
-  };
-  
-
+const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, onSendToKitchen, onShowAllergens }) => {
   if (!isVisible) {
     return null; // Don't render anything if the modal is not visible
   }
@@ -54,7 +11,7 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
   return (
     <div className="cart-modal">
       <div className="cart-modal-content">
-      <FontAwesomeIcon icon={faXmark} className='close-button' />
+        <FontAwesomeIcon icon={faXmark} className="close-button" onClick={onClose} />
         <h2>Cart Summary</h2>
         {Object.keys(cart).length === 0 ? (
           <p>No items in the cart</p>
@@ -81,13 +38,20 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
                       </div>
                     )}
 
+                    {/* Display Allergens */}
+                    {item.allergens?.length > 0 && (
+                      <div className="item-note">
+                        <strong>Allergens:</strong> {item.allergens.join(', ')}
+                      </div>
+                    )}
+
+                    {item.note && <div className="item-note"><strong>Note:</strong> {item.note}</div>}
                     <button
-                      onClick={() => handleShowAllergens(item.allergens)}
+                      onClick={() => onShowAllergens(item.allergens)}
                       className="allergen-button"
                     >
                       View Allergens
                     </button>
-                    {item.note && <div className="item-note"><strong>Note:</strong> {item.note}</div>}
                   </div>
                   <div className="quantity-control">
                     <button onClick={() => onUpdateQuantity(tableId, item.id, -1)} className="quantity-button">-</button>
@@ -107,16 +71,9 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
           ))
         )}
       </div>
-      {isAllergenModalVisible && (
-        <AllergenModal
-          allergens={currentAllergens}
-          isVisible={isAllergenModalVisible}
-          onClose={handleCloseAllergens}
-        />
-      )}
-
     </div>
   );
 };
 
 export default CartModal;
+

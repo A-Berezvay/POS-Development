@@ -7,6 +7,7 @@ import Header from './components/layout/header';
 import CartModal from './components/cart/CartModal';
 import PaymentProcessingPage from './components/payment/PaymentProcessingPage';
 import SplitPaymentModal from './components/payment/SplitPaymentModal';
+import AllergenModal from './components/order/AllergenModal';
 
 function App() {
   // State to track if the user is authenticated
@@ -20,11 +21,14 @@ function App() {
     // Add more tables as needed
   ]);
   const [isCartModalVisible, setIsCartModalVisible] = useState(false);
+  const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
+  const [currentAllergens, setCurrentAllergens] = useState([]);
 
   // State to manage split payment modal visibility and the current table being split
   const [isSplitModalVisible, setIsSplitModalVisible] = useState(false);
   const [currentTableForSplit, setCurrentTableForSplit] = useState(null);
 
+  {/* LOGIN */}
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
@@ -76,6 +80,17 @@ function App() {
     setIsCartModalVisible(true);
   };
   
+  // Function to show allergens in a full-screen modal
+  const handleShowAllergens = (allergens) => {
+    setCurrentAllergens(allergens);
+    setIsAllergenModalVisible(true);
+  };
+
+  const handleCloseAllergens = () => {
+    setIsAllergenModalVisible(false);
+    setCurrentAllergens([]);
+  };
+
   
 
   const removeItemFromCart = (tableId, itemId) => {
@@ -161,6 +176,25 @@ function App() {
     // Hide the cart modal
     setIsCartModalVisible(false);
   };
+
+  const onRemoveOrderItem = (tableId, itemId, reason) => {
+    setOrdersReadyForPayment((prevOrders) => {
+      const updatedOrdersForTable = (prevOrders[tableId] || []).filter(order => order.id !== itemId);
+      return {
+        ...prevOrders,
+        [tableId]: updatedOrdersForTable,
+      };
+    });
+
+    // Modify the cart if it should reflect void actions
+    setCart((prevCart) => {
+      const updatedCartForTable = (prevCart[tableId] || []).filter(item => item.id !== itemId);
+      return {
+        ...prevCart,
+        [tableId]: updatedCartForTable,
+      };
+    });
+  };
   
   
 
@@ -203,7 +237,12 @@ function App() {
         {isAuthenticated && (
           <>
             <Route path="/dashboard" element={<Dashboard tables={tables} setTables={setTables} onAddToCart={addItemToCart} />} />
-            <Route path="/table/:tableId/order" element={<OrderPage setTables={setTables} onAddToCart={addItemToCart} ordersReadyForPayment={ordersReadyForPayment} />} />
+            <Route 
+              path="/table/:tableId/order" 
+              element={<OrderPage setTables={setTables} 
+              onAddToCart={addItemToCart} 
+              ordersReadyForPayment={ordersReadyForPayment}
+              onRemoveOrderItem={onRemoveOrderItem} />} />
             <Route 
               path="/payment" 
               element={
@@ -211,6 +250,7 @@ function App() {
                   ordersReadyForPayment={ordersReadyForPayment} 
                   onPayment={handlePayment}
                   onSplitPayment={openSplitPaymentModal}
+                  onRemoveOrderItem={onRemoveOrderItem}
                 />
               } 
             />
@@ -225,6 +265,7 @@ function App() {
         onRemoveItem={removeItemFromCart}
         onUpdateQuantity={updateItemQuantity}
         onSendToKitchen={sendOrderToKitchen}
+        onShowAllergens={handleShowAllergens}
       />
 
       {isSplitModalVisible && currentTableForSplit !== null && (
@@ -232,6 +273,16 @@ function App() {
           ordersReadyForPayment={ordersReadyForPayment[currentTableForSplit]}
           onClose={closeSplitPaymentModal}
           onPayment={() => handlePayment(currentTableForSplit)}
+        />
+      )}
+
+      {isAllergenModalVisible && (
+        <AllergenModal
+          allergens={currentAllergens}
+          isVisible={isAllergenModalVisible}
+          onClose={handleCloseAllergens}
+          selectedAllergens={[]}
+          onConfirmAllergens={(allergens) => console.log("Confirmed Allergens:", allergens)}
         />
       )}
     </Router>

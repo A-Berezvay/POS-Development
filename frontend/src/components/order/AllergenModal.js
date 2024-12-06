@@ -9,7 +9,7 @@ const allergensList = [
   'Lupin', 'Molluscs'
 ];
 
-const AllergenModal = ({ isVisible, onClose, onConfirmAllergens, selectedAllergens }) => {
+const AllergenModal = ({ isVisible, allergens, onClose, onConfirmAllergens, selectedAllergens }) => {
   const [selected, setSelected] = useState(selectedAllergens || []);
 
   if (!isVisible) {
@@ -35,6 +35,42 @@ const AllergenModal = ({ isVisible, onClose, onConfirmAllergens, selectedAllerge
       <div className="allergen-modal-content">
         <FontAwesomeIcon icon={faXmark} className="close-button" onClick={onClose} />
         <h2>Allergen Information</h2>
+
+        {/* Display Contains, May Contain, and Removable allergens */}
+        <div className="allergen-info">
+          {allergens?.contains?.length > 0 && (
+            <div>
+              <h4>Contains:</h4>
+              <ul>
+                {allergens.contains.map((allergen, index) => (
+                  <li key={`contains-${index}`}>{allergen}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {allergens?.mayContain?.length > 0 && (
+            <div>
+              <h4>May Contain:</h4>
+              <ul>
+                {allergens.mayContain.map((allergen, index) => (
+                  <li key={`mayContain-${index}`}>{allergen}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {allergens?.removable?.length > 0 && (
+            <div>
+              <h4>Removable:</h4>
+              <ul>
+                {allergens.removable.map((allergen, index) => (
+                  <li key={`removable-${index}`}>{allergen}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* Allergen selection buttons */}
         <div className="allergen-buttons-container">
           {allergensList.map((allergen) => (
             <button
@@ -46,6 +82,15 @@ const AllergenModal = ({ isVisible, onClose, onConfirmAllergens, selectedAllerge
             </button>
           ))}
         </div>
+
+        {/* Display Selected Allergens */}
+        {selected.length > 0 && (
+          <div className="selected-allergens">
+            <h4>Selected Allergens:</h4>
+            <p>{selected.join(', ')}</p>
+          </div>
+        )}
+
         <div className="modal-buttons-container">
           <button className="confirm-button" onClick={handleConfirmClick}>Confirm</button>
           <button className="close-button" onClick={onClose}>Close</button>
@@ -56,3 +101,5 @@ const AllergenModal = ({ isVisible, onClose, onConfirmAllergens, selectedAllerge
 };
 
 export default AllergenModal;
+
+

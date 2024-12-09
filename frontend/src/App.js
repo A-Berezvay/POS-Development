@@ -137,45 +137,46 @@ function App() {
 
   const sendOrderToKitchen = (tableId) => {
     setOrdersReadyForPayment((prevOrders) => {
-      const existingOrdersForTable = prevOrders[tableId] || [];
-      const newOrdersForTable = cart[tableId] || [];
+      const tableCart = cart[tableId] || [];
+      const updatedOrdersForTable = [...(prevOrders[tableId] || [])];
   
-      // Create a copy of the existing orders to update
-      let combinedOrders = [...existingOrdersForTable];
-  
-      newOrdersForTable.forEach((newItem) => {
-        const existingItemIndex = combinedOrders.findIndex(
-          (existingItem) =>
-            existingItem.id === newItem.id &&
-            existingItem.note === newItem.note &&
-            JSON.stringify(existingItem.modifier) === JSON.stringify(newItem.modifier)
+      tableCart.forEach((cartItem) => {
+        const existingOrderIndex = updatedOrdersForTable.findIndex(
+          (order) =>
+            order.id === cartItem.id &&
+            order.note === cartItem.note &&
+            JSON.stringify(order.modifier) === JSON.stringify(cartItem.modifier)
         );
   
-        if (existingItemIndex !== -1) {
-          // If an identical item exists, increment its quantity
-          combinedOrders[existingItemIndex].quantity += newItem.quantity;
+        if (existingOrderIndex !== -1) {
+          // Update quantity of existing item in ordersReadyForPayment
+          updatedOrdersForTable[existingOrderIndex] = {
+            ...updatedOrdersForTable[existingOrderIndex],
+            quantity: updatedOrdersForTable[existingOrderIndex].quantity + cartItem.quantity,
+          };
         } else {
-          // If no identical item exists, add it to the combined orders
-          combinedOrders.push({ ...newItem });
+          // Add the item as a new entry
+          updatedOrdersForTable.push(cartItem);
         }
       });
   
       return {
         ...prevOrders,
-        [tableId]: combinedOrders,
+        [tableId]: updatedOrdersForTable,
       };
     });
   
-    // Clear the cart for that table after sending orders to the kitchen
+    // Clear the cart for the table after sending the order
     setCart((prevCart) => {
       const updatedCart = { ...prevCart };
       delete updatedCart[tableId];
       return updatedCart;
     });
   
-    // Hide the cart modal
+    // Optionally hide the cart modal
     setIsCartModalVisible(false);
   };
+  
 
   const onRemoveOrderItem = (tableId, itemId, reason) => {
     setOrdersReadyForPayment((prevOrders) => {

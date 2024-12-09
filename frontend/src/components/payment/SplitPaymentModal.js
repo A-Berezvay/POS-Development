@@ -104,9 +104,9 @@ const handleNumberPadInput = (value) => {
           {/* Display split results conditionally */}
           {showSplitBy && (
             <div className="split-summary">
-              <p>
-                Split by {numberOfGuests}: £{(remainingAmount / numberOfGuests).toFixed(2)} per person
-              </p>
+              <p>Split by: {numberOfGuests}</p>
+              <p>£{(remainingAmount / numberOfGuests).toFixed(2)}</p>
+              <p> per person</p>
             </div>
           )}
           <button onClick={handleConfirm} className="confirm-split-button">
@@ -117,13 +117,12 @@ const handleNumberPadInput = (value) => {
         {/* Number pad modal for custom splits */}
         {showNumberPad && (
           <div className="number-pad-modal">
-            <div className="number-pad">
+            <div className="split-number-pad">
               <div>
-              <h3>Split by</h3>
-              <p className="number-display">{customGuests || "0"}</p>
+              <h3>Split by</h3> <p className="number-display">{customGuests || "0"}</p>
               </div>
               <div className="number-buttons">
-                {["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "DEL", "OK"].map((num) => (
+                {["1", "2", "3", "4", "5", "6", "7", "8", "9", "DEL", "0", "OK"].map((num) => (
                   <button key={num} onClick={() => handleNumberPadInput(num)}>
                     {num}
                   </button>

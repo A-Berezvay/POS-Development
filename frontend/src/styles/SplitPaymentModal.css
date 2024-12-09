@@ -48,6 +48,46 @@
     background: transparent;
   }
 
+/* Split buttons (2, 3, 4, Other) */
+  .split-buttons {
+    gap: 5px;
+    display: flex;
+    margin-bottom: 5px;
+
+  }
+
+  .split-buttons button {
+    font-size: 1.5em;
+    width: 200px;
+    height: 50px;
+    padding: 10px;
+  }
+
+
+/* Enter Amount button */
+  .split-by-amount-button {
+    display: flex;
+    font-size: 1.5em; 
+  }
+
+
+/* Split by: number and £ + person */
+  .split-summary {
+    display: flex;
+    gap: 10px;
+}
+
+
+.split-summary p {
+  margin: 10; 
+}
+
+/* Confirm Split Payment Button */
+  .confirm-split-button {
+    display: flex;
+    font-size: 1.5em;
+  }
+
 
 /* Displaying numbers for split payment */
   .number-buttons {
@@ -61,7 +101,7 @@
   }
   
 
-  .number-pad {
+  .split-number-pad {
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -16,7 +16,7 @@ const menuItems = [
     { id: 10, name: 'Chew Valley Pork', category: 'mains', price: 15 },
     { id: 11, name: 'Potato Dumplings', category: 'mains', price: 15 },
     { id: 12, name: 'Beef Burger', category: 'mains', price: 15 },
-    { id: 13, name: 'Steak Fillet', category: 'mains', price: 15 },
+    { id: 13, name: 'Steak Fillet', category: 'mains', price: 15, allergens: {contains: ['Mustard'], mayContain: ['Milk'], removable: ['Gluten']}},
     { id: 14, name: 'Club Sandwich', category: 'mains', price: 15 },
   
     // Sides 

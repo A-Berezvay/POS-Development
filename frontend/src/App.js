@@ -7,6 +7,7 @@ import Header from './components/layout/header';
 import CartModal from './components/cart/CartModal';
 import PaymentProcessingPage from './components/payment/PaymentProcessingPage';
 import SplitPaymentModal from './components/payment/SplitPaymentModal';
+import AllergenModal from './components/order/AllergenModal';
 
 function App() {
   // State to track if the user is authenticated
@@ -20,11 +21,14 @@ function App() {
     // Add more tables as needed
   ]);
   const [isCartModalVisible, setIsCartModalVisible] = useState(false);
+  const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
+  const [currentAllergens, setCurrentAllergens] = useState([]);
 
   // State to manage split payment modal visibility and the current table being split
   const [isSplitModalVisible, setIsSplitModalVisible] = useState(false);
   const [currentTableForSplit, setCurrentTableForSplit] = useState(null);
 
+  {/* LOGIN */}
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
@@ -33,39 +37,61 @@ function App() {
     setIsAuthenticated(false);
   };
 
-  const addItemToCart = (tableId, item) => {
+  const addItemToCart = (tableId, newItem) => {
     setCart((prevCart) => {
       const tableCart = prevCart[tableId] || [];
-
-      const existingItemIndex = tableCart.findIndex((cartItem) => cartItem.id === item.id);
+  
+      // Unique key for each item including modifiers and notes
+      const existingItemIndex = tableCart.findIndex(
+        (cartItem) => 
+          cartItem.id === newItem.id &&
+          cartItem.note === newItem.note &&
+          JSON.stringify(cartItem.modifier) === JSON.stringify(newItem.modifier)
+      );
+  
       if (existingItemIndex !== -1) {
+        // Update quantity of existing item with same modifier
         const updatedTableCart = [...tableCart];
         updatedTableCart[existingItemIndex] = {
           ...updatedTableCart[existingItemIndex],
-          quantity: updatedTableCart[existingItemIndex].quantity + item.quantity,
+          quantity: updatedTableCart[existingItemIndex].quantity + newItem.quantity,
         };
         return {
           ...prevCart,
           [tableId]: updatedTableCart,
         };
       } else {
+        // If it's a new item (or different modifier), add it separately
         return {
           ...prevCart,
-          [tableId]: [...tableCart, item],
+          [tableId]: [...tableCart, newItem],
         };
       }
     });
-
+  
     // Update table status to occupied and assign a waiter
     setTables((prevTables) =>
       prevTables.map((table) =>
         table.id === Number(tableId) ? { ...table, status: 'occupied', waiter: 'John Doe' } : table
       )
     );
-
+  
     // Automatically make the cart modal visible when an item is added
     setIsCartModalVisible(true);
   };
+  
+  // Function to show allergens in a full-screen modal
+  const handleShowAllergens = (allergens) => {
+    setCurrentAllergens(allergens);
+    setIsAllergenModalVisible(true);
+  };
+
+  const handleCloseAllergens = () => {
+    setIsAllergenModalVisible(false);
+    setCurrentAllergens([]);
+  };
+
+  
 
   const removeItemFromCart = (tableId, itemId) => {
     setCart((prevCart) => {
@@ -114,15 +140,23 @@ function App() {
       const existingOrdersForTable = prevOrders[tableId] || [];
       const newOrdersForTable = cart[tableId] || [];
   
-      // Combine existing orders with new orders, summing quantities of identical items
-      const combinedOrders = [...existingOrdersForTable];
+      // Create a copy of the existing orders to update
+      let combinedOrders = [...existingOrdersForTable];
   
       newOrdersForTable.forEach((newItem) => {
-        const existingItemIndex = combinedOrders.findIndex(item => item.id === newItem.id);
+        const existingItemIndex = combinedOrders.findIndex(
+          (existingItem) =>
+            existingItem.id === newItem.id &&
+            existingItem.note === newItem.note &&
+            JSON.stringify(existingItem.modifier) === JSON.stringify(newItem.modifier)
+        );
+  
         if (existingItemIndex !== -1) {
+          // If an identical item exists, increment its quantity
           combinedOrders[existingItemIndex].quantity += newItem.quantity;
         } else {
-          combinedOrders.push({...newItem});
+          // If no identical item exists, add it to the combined orders
+          combinedOrders.push({ ...newItem });
         }
       });
   
@@ -133,7 +167,7 @@ function App() {
     });
   
     // Clear the cart for that table after sending orders to the kitchen
-    setCart(prevCart => {
+    setCart((prevCart) => {
       const updatedCart = { ...prevCart };
       delete updatedCart[tableId];
       return updatedCart;
@@ -142,6 +176,26 @@ function App() {
     // Hide the cart modal
     setIsCartModalVisible(false);
   };
+
+  const onRemoveOrderItem = (tableId, itemId, reason) => {
+    setOrdersReadyForPayment((prevOrders) => {
+      const updatedOrdersForTable = (prevOrders[tableId] || []).filter(order => order.id !== itemId);
+      return {
+        ...prevOrders,
+        [tableId]: updatedOrdersForTable,
+      };
+    });
+
+    // Modify the cart if it should reflect void actions
+    setCart((prevCart) => {
+      const updatedCartForTable = (prevCart[tableId] || []).filter(item => item.id !== itemId);
+      return {
+        ...prevCart,
+        [tableId]: updatedCartForTable,
+      };
+    });
+  };
+  
   
 
   // Function to handle payment for a table
@@ -183,7 +237,12 @@ function App() {
         {isAuthenticated && (
           <>
             <Route path="/dashboard" element={<Dashboard tables={tables} setTables={setTables} onAddToCart={addItemToCart} />} />
-            <Route path="/table/:tableId/order" element={<OrderPage setTables={setTables} onAddToCart={addItemToCart} ordersReadyForPayment={ordersReadyForPayment} />} />
+            <Route 
+              path="/table/:tableId/order" 
+              element={<OrderPage setTables={setTables} 
+              onAddToCart={addItemToCart} 
+              ordersReadyForPayment={ordersReadyForPayment}
+              onRemoveOrderItem={onRemoveOrderItem} />} />
             <Route 
               path="/payment" 
               element={
@@ -191,6 +250,7 @@ function App() {
                   ordersReadyForPayment={ordersReadyForPayment} 
                   onPayment={handlePayment}
                   onSplitPayment={openSplitPaymentModal}
+                  onRemoveOrderItem={onRemoveOrderItem}
                 />
               } 
             />
@@ -205,6 +265,7 @@ function App() {
         onRemoveItem={removeItemFromCart}
         onUpdateQuantity={updateItemQuantity}
         onSendToKitchen={sendOrderToKitchen}
+        onShowAllergens={handleShowAllergens}
       />
 
       {isSplitModalVisible && currentTableForSplit !== null && (
@@ -212,6 +273,16 @@ function App() {
           ordersReadyForPayment={ordersReadyForPayment[currentTableForSplit]}
           onClose={closeSplitPaymentModal}
           onPayment={() => handlePayment(currentTableForSplit)}
+        />
+      )}
+
+      {isAllergenModalVisible && (
+        <AllergenModal
+          allergens={currentAllergens}
+          isVisible={isAllergenModalVisible}
+          onClose={handleCloseAllergens}
+          selectedAllergens={[]}
+          onConfirmAllergens={(allergens) => console.log("Confirmed Allergens:", allergens)}
         />
       )}
     </Router>

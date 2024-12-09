@@ -1,51 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import '../../styles/SplitPaymentModal.css';
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import "../../styles/SplitPaymentModal.css";
 
 const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableId }) => {
-  if (!totalAmount) {
-    console.error("Total amount is undefined or invalid.");
-  }
+  const [numberOfGuests, setNumberOfGuests] = useState(2); // Default to splitting between 2
+  const [splitAmounts, setSplitAmounts] = useState([]);
+  const [remainingAmount, setRemainingAmount] = useState(totalAmount); // Remaining balance
+  const [showNumberPad, setShowNumberPad] = useState(false); // To show custom number pad modal
+  const [showAmountPad, setShowAmountPad] = useState(false); // To show custom amount pad modal
+  const [showSplitBy, setShowSplitBy] = useState(false);
+  const [customAmount, setCustomAmount] = useState(""); // Input for custom amounts
+  const [customGuests, setCustomGuests] = useState("");
 
-  // State declarations - these are all initialized unconditionally
-  const [splitAmounts, setSplitAmounts] = useState([0]);  // Amounts for each guest
-  const [numberOfGuests, setNumberOfGuests] = useState(1); // Number of guests
-  const [splitType, setSplitType] = useState('evenly'); // Type of split: 'evenly', 'amount', etc.
-
+  // Calculate equal splits whenever the number of guests changes
   useEffect(() => {
-    // Whenever numberOfGuests or splitType changes, update the splitAmounts if needed
-    if (splitType === 'evenly') {
-      const evenlySplitAmount = totalAmount / numberOfGuests;
-      setSplitAmounts(Array(numberOfGuests).fill(parseFloat(evenlySplitAmount.toFixed(2))));
+    const split = remainingAmount / numberOfGuests;
+    setSplitAmounts(Array(numberOfGuests).fill(parseFloat(split.toFixed(2))));
+  }, [numberOfGuests, remainingAmount]);
+
+const handleNumberPadInput = (value) => {
+  if (value === "OK") {
+    const amount = parseInt(customGuests);
+    if (customGuests > 0) {
+      setNumberOfGuests(customGuests);
+      setRemainingAmount(totalAmount); // Reset remaining amount after division
+      setSplitAmounts(Array(customGuests).fill(parseFloat((totalAmount / customGuests).toFixed(2)))); // Divide totalAmount by number of guests
+      setCustomGuests("");
+      setShowNumberPad(false);
+    } else {
+      alert("Please enter a valid number of guests.");
     }
-  }, [numberOfGuests, splitType, totalAmount]);
+  } else if (value === "DEL") {
+    setCustomGuests((prev) => prev.slice(0, -1));
+  } else {
+    setCustomGuests((prev) => (prev + value).replace(/^0+/, "")); 
+  }
+};
 
-  // Handle evenly splitting the bill
-  const handleSplitEvenly = () => {
-    const amountPerGuest = totalAmount / numberOfGuests;
-    setSplitAmounts(Array(numberOfGuests).fill(parseFloat(amountPerGuest.toFixed(2))));
-    setSplitType('evenly');
+  // Handle custom amount input
+  const handleAmountPadInput = (value) => {
+    if (value === "OK") {
+      const amount = parseFloat(customAmount);
+      if (amount > 0 && amount <= remainingAmount) {
+        setSplitAmounts((prev) => [...prev, amount]); // Add the custom split amount
+        setRemainingAmount((prev) => parseFloat((prev - amount).toFixed(2))); // Deduct amount
+        setCustomAmount(""); // Clear the input field
+        setShowAmountPad(false); // Close the keypad
+      } else {
+        alert("Invalid amount. Ensure it's positive and less than or equal to the remaining amount.");
+      }
+    } else if (value === "DEL") {
+      setCustomAmount((prev) => prev.slice(0, -1)); // Remove the last digit
+    } else {
+      setCustomAmount((prev) => (prev + value).replace(/^0+/, "")); // Add new input digit
+    }
   };
 
-  // Handle amount input change for custom split
-  const handleAmountChange = (index, value) => {
-    const updatedAmounts = [...splitAmounts];
-    updatedAmounts[index] = parseFloat(value) || 0;
-    setSplitAmounts(updatedAmounts);
-    setSplitType('amount');
-  };
-
-  // Add more guests for splitting the bill
-  const addGuest = () => {
-    setNumberOfGuests((prev) => prev + 1);
-    setSplitAmounts((prev) => [...prev, 0]);
-  };
-
-  // Handle confirming the split payment
-  const handleConfirmSplitPayment = () => {
-    onConfirmSplitPayment(tableId);
-    onClose();  // Close the modal
+  // Confirm payment and close modal
+  const handleConfirm = () => {
+    console.log("Splits confirmed:", splitAmounts); // Debugging/logging purposes
+    onConfirmSplitPayment(tableId, splitAmounts);
+    onClose();
   };
 
   return (
@@ -56,48 +72,83 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
           <FontAwesomeIcon icon={faXmark} className="split-payment-close" onClick={onClose} />
         </div>
         <div className="split-payment-body">
-          <p className="total-amount">Total Amount: £{totalAmount.toFixed(2)}</p>
+          <p>Total Amount: £{remainingAmount.toFixed(2)}</p>
 
-          <div className="split-options">
-            <button onClick={handleSplitEvenly} className="split-evenly-button">
-              Split Evenly
-            </button>
-            <button onClick={addGuest} className="add-guest-button">
-              Add Guest
-            </button>
-            <button onClick={() => setSplitType('amount')} className="split-by-amount-button">
-              Split by Amount
+          {/* Buttons for predefined splits */}
+          <div className="split-buttons">
+            {[2, 3, 4].map((num) => (
+              <button onClick={() => { 
+                setNumberOfGuests(num);
+                setShowSplitBy(true);
+              }}
+              >
+                {num}
+              </button>
+            ))}
+            <button onClick={() => {
+              setShowNumberPad(true);
+              setShowSplitBy(true);
+            }}
+            >
+              Other
             </button>
           </div>
 
-          {splitType === 'amount' && (
-            <div className="split-amounts">
-              {splitAmounts.map((amount, index) => (
-                <div key={index} className="split-amount-item">
-                  <label>Guest {index + 1}:</label>
-                  <input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => handleAmountChange(index, e.target.value)}
-                  />
-                </div>
-              ))}
+          {/* Split by Amount button */}
+          <div className="split-by-amount-section">
+            <button onClick={() => setShowAmountPad(true)} className="split-by-amount-button">
+              Enter Amount
+            </button>
+          </div>
+
+          {/* Display split results conditionally */}
+          {showSplitBy && (
+            <div className="split-summary">
+              <p>
+                Split by {numberOfGuests}: £{(remainingAmount / numberOfGuests).toFixed(2)} per person
+              </p>
             </div>
           )}
-
-          {splitType === 'evenly' && (
-            <div className="split-evenly">
-              <p className="total-amount">Each guest will pay: £{(totalAmount / numberOfGuests).toFixed(2)}</p>
-            </div>
-          )}
-
-          <button 
-            onClick={handleConfirmSplitPayment} 
-            className="confirm-split-button"
-          >
+          <button onClick={handleConfirm} className="confirm-split-button">
             Confirm Split Payment
           </button>
         </div>
+
+        {/* Number pad modal for custom splits */}
+        {showNumberPad && (
+          <div className="number-pad-modal">
+            <div className="number-pad">
+              <div>
+              <h3>Split by</h3>
+              <p className="number-display">{customGuests || "0"}</p>
+              </div>
+              <div className="number-buttons">
+                {["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "DEL", "OK"].map((num) => (
+                  <button key={num} onClick={() => handleNumberPadInput(num)}>
+                    {num}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Amount pad modal for custom amounts */}
+        {showAmountPad && (
+          <div className="amount-pad-modal">
+            <div className="amount-pad">
+              <h3>Enter Amount</h3>
+              <p className="amount-display">£{customAmount || "0"}</p>
+              <div className="amount-buttons">
+                {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "DEL", "OK"].map((key) => (
+                  <button key={key} onClick={() => handleAmountPadInput(key)}>
+                    {key}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

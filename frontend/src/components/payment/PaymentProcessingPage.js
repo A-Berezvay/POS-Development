@@ -95,7 +95,7 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
                     <div className="payment-item-details">
                       <span>{item.quantity}x</span>
                       <span>{item.name}</span>
-                      <span>£{(itemPrice * item.quantity).toFixed(2)}</span>
+                      <span>£{(itemPrice).toFixed(2)}</span>
                       <button
                         onClick={() => handleVoidItemClick(tableId, item)}
                         className="void-item-button"

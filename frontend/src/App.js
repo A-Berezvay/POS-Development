@@ -18,6 +18,9 @@ function App() {
     { id: 1, status: 'free', waiter: null, numberOfGuests: null },
     { id: 2, status: 'free', waiter: null, numberOfGuests: null },
     { id: 3, status: 'free', waiter: null, numberOfGuests: null },
+    { id: 4, status: 'free', waiter: null, numberOfGuests: null },
+    { id: 5, status: 'free', waiter: null, numberOfGuests: null },
+    { id: 6, status: 'free', waiter: null, numberOfGuests: null },
     // Add more tables as needed
   ]);
   const [isCartModalVisible, setIsCartModalVisible] = useState(false);

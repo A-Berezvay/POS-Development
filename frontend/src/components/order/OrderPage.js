@@ -194,7 +194,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
           <span>{tableId}</span>
         </div>
         <div>
-          <h2>Number of Guests</h2>
+          <h2>Guests</h2>
           <span>{numberOfGuests}</span>
         </div>
       </div>

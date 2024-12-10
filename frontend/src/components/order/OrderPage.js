@@ -343,15 +343,18 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
             })
             .map((item) => (
               <div key={item.id} className="menu-item-card">
-                <h4>{item.name}</h4>
-                <p>
-                  Price: £
-                  {typeof item.price === 'object'
-                    ? selectedWineSize
-                      ? item.price[selectedWineSize]
-                      : 'Select a size'
-                    : item.price}
-                </p>
+                <div className="item-card-heading">
+                  <h4>{item.name}</h4>
+                  <p>
+                    £
+                    {typeof item.price === 'object'
+                      ? selectedWineSize
+                        ? item.price[selectedWineSize]
+                        : 'Select a size'
+                      : item.price}
+                  </p>
+                </div>
+
                 {/* Steak Fillet Modifier Options */}
                 {item.id === 13 && (
                   <>
@@ -419,7 +422,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
                 <button onClick={() => handleAddToCart(item)} className="add-to-cart-button">
                   Add to Cart
                 </button>
-                <button onClick={() => handleShowAllergens(item.allergens, item.id)} className="allergen-button">
+                <button onClick={() => handleShowAllergens(item.allergens, item.id)} className="allergen-view-button">
                   View Allergens
                 </button>
               </div>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import '../styles/dashboard.css';
 import GuestModal from './GuestModal';
 import OrderPage from '../components/order/OrderPage';
@@ -48,7 +50,11 @@ const Dashboard = ({ onAddToCart, tables, setTables }) => {
             <div key={table.id} className={`table ${table.status}`}>
               <h3>Table {table.id}</h3>
               {table.numberOfGuests !== null && (
-                <span className="guest-count">Guests: {table.numberOfGuests}</span>
+                <div className="guest-count">
+                  <FontAwesomeIcon icon={faUsers} />
+                  <span> {table.numberOfGuests}</span>
+                </div>
+
               )}
               {table.status === 'free' ? (
                 <button onClick={() => handleOpenTable(table.id)}>Open Table</button>

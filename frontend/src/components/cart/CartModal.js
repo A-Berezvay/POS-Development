@@ -3,7 +3,7 @@ import '../../styles/CartModal.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, onSendToKitchen, onShowAllergens }) => {
+const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, onSendToKitchen }) => {
   if (!isVisible) {
     return null; // Don't render anything if the modal is not visible
   }
@@ -46,12 +46,6 @@ const CartModal = ({ isVisible, cart, onClose, onRemoveItem, onUpdateQuantity, o
                     )}
 
                     {item.note && <div className="item-note"><strong>Note:</strong> {item.note}</div>}
-                    <button
-                      onClick={() => onShowAllergens(item.allergens)}
-                      className="allergen-button"
-                    >
-                      View Allergens
-                    </button>
                   </div>
                   <div className="quantity-control">
                     <button onClick={() => onUpdateQuantity(tableId, item.id, -1)} className="quantity-button">-</button>

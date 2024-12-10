@@ -47,7 +47,7 @@ function LoginPage({ onLogin }) {
           value={pin}
           readOnly // Making it read-only so it can only be updated via number pad
           maxLength="4"
-          style={{ fontSize: '24px', textAlign: 'center', letterSpacing: '10px', width: '100px' }}
+          style={{ fontSize: '24px', textAlign: 'center', letterSpacing: '10px'}}
         />
       </div>
       {/* Number Pad for entering the PIN */}

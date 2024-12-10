@@ -4,7 +4,6 @@
   align-items: center;
   padding: 60px 30px;
   font-family: Arial, sans-serif;
-  background-color: #484747;
   min-height: 100vh;
 }
 
@@ -55,21 +54,21 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.5em;
+  margin-left: 10px;
 }
 
-button {
-  background-color: blue;
-  color: white;
+.guest-count span{
+  margin: 15px;
+}
+
+button {  
+  font-weight: 900;
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #0056b3;
 }
 
 p {

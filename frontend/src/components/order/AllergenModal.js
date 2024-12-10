@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const allergensList = [
-  'Gluten', 'Crustaceans', 'Eggs', 'Fish', 'Peanuts', 'Soybeans',
-  'Milk', 'Nuts', 'Celery', 'Mustard', 'Sesame seeds', 'Sulphur dioxide',
+  'Milk', 'Gluten', 'Eggs', 'Nuts', 'Peanuts', 'Crustaceans', 'Fish', 'Soybeans',
+  'Celery', 'Mustard', 'Sesame seeds', 'Sulphur dioxide',
   'Lupin', 'Molluscs'
 ];
 

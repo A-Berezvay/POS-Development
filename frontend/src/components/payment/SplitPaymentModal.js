@@ -72,7 +72,7 @@ const handleNumberPadInput = (value) => {
           <FontAwesomeIcon icon={faXmark} className="split-payment-close" onClick={onClose} />
         </div>
         <div className="split-payment-body">
-          <p>Total Amount: £{remainingAmount.toFixed(2)}</p>
+          <p className="split-total-amount">Total Amount: £{remainingAmount.toFixed(2)}</p>
 
           {/* Buttons for predefined splits */}
           <div className="split-buttons">

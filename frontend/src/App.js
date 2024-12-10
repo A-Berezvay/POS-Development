@@ -180,22 +180,93 @@ function App() {
 
   const onRemoveOrderItem = (tableId, itemId, reason) => {
     setOrdersReadyForPayment((prevOrders) => {
-      const updatedOrdersForTable = (prevOrders[tableId] || []).filter(order => order.id !== itemId);
-      return {
-        ...prevOrders,
-        [tableId]: updatedOrdersForTable,
-      };
+      const tableOrders = prevOrders[tableId] || [];
+      const itemIndex = tableOrders.findIndex(order => order.id === itemId);
+  
+      if (itemIndex !== -1) {
+        const item = tableOrders[itemIndex];
+  
+        if (item.quantity > 1) {
+          // Prompt user for quantity to void
+          const voidQuantity = parseInt(prompt(`This item has a quantity of ${item.quantity}. How many would you like to void?`, "1"), 10);
+  
+          if (!isNaN(voidQuantity) && voidQuantity > 0 && voidQuantity <= item.quantity) {
+            const updatedOrders = [...tableOrders];
+  
+            if (voidQuantity === item.quantity) {
+              // Remove the item if the entire quantity is voided
+              updatedOrders.splice(itemIndex, 1);
+            } else {
+              // Update the item's quantity
+              updatedOrders[itemIndex] = {
+                ...item,
+                quantity: item.quantity - voidQuantity,
+              };
+            }
+            return {
+              ...prevOrders,
+              [tableId]: updatedOrders,
+            };
+          } else {
+            console.error("Invalid void quantity entered.");
+            return prevOrders;
+          }
+        } else {
+          // Remove the item if quantity is 1
+          const updatedOrders = tableOrders.filter(order => order.id !== itemId);
+          console.log(`Voided ${item.quantity} of ${item.name} from table ${tableId}. Reason: ${reason}`);
+          return {
+            ...prevOrders,
+            [tableId]: updatedOrders,
+          };
+        }
+      }
+      return prevOrders;
     });
-
-    // Modify the cart if it should reflect void actions
+  
+    // Update the cart if necessary
     setCart((prevCart) => {
-      const updatedCartForTable = (prevCart[tableId] || []).filter(item => item.id !== itemId);
-      return {
-        ...prevCart,
-        [tableId]: updatedCartForTable,
-      };
+      const tableCart = prevCart[tableId] || [];
+      const itemIndex = tableCart.findIndex(item => item.id === itemId);
+  
+      if (itemIndex !== -1) {
+        const item = tableCart[itemIndex];
+  
+        if (item.quantity > 1) {
+          const voidQuantity = parseInt(prompt(`This item has a quantity of ${item.quantity}. How many would you like to void?`, "1"), 10);
+  
+          if (!isNaN(voidQuantity) && voidQuantity > 0 && voidQuantity <= item.quantity) {
+            const updatedCart = [...tableCart];
+  
+            if (voidQuantity === item.quantity) {
+              updatedCart.splice(itemIndex, 1);
+            } else {
+              updatedCart[itemIndex] = {
+                ...item,
+                quantity: item.quantity - voidQuantity,
+              };
+            }
+  
+            return {
+              ...prevCart,
+              [tableId]: updatedCart,
+            };
+          } else {
+            console.error("Invalid void quantity entered.");
+            return prevCart;
+          }
+        } else {
+          const updatedCart = tableCart.filter(item => item.id !== itemId);
+          return {
+            ...prevCart,
+            [tableId]: updatedCart,
+          };
+        }
+      }
+      return prevCart;
     });
   };
+  
   
   
 
@@ -240,10 +311,16 @@ function App() {
             <Route path="/dashboard" element={<Dashboard tables={tables} setTables={setTables} onAddToCart={addItemToCart} />} />
             <Route 
               path="/table/:tableId/order" 
-              element={<OrderPage setTables={setTables} 
-              onAddToCart={addItemToCart} 
-              ordersReadyForPayment={ordersReadyForPayment}
-              onRemoveOrderItem={onRemoveOrderItem} />} />
+              element={
+                <OrderPage 
+                  tables={tables}
+                  setTables={setTables} 
+                  onAddToCart={addItemToCart} 
+                  ordersReadyForPayment={ordersReadyForPayment}
+                  onRemoveOrderItem={onRemoveOrderItem} 
+                />
+              } 
+            />
             <Route 
               path="/payment" 
               element={

@@ -76,7 +76,7 @@ const AllergenModal = ({ isVisible, allergens, onClose, onConfirmAllergens, sele
             <button
               key={allergen}
               onClick={() => handleAllergenClick(allergen)}
-              className={`allergen-button ${selected.includes(allergen) ? 'selected' : ''}`}
+              className={`allergen-button ${selected.includes(allergen) ? 'active' : ''}`}
             >
               {allergen}
             </button>

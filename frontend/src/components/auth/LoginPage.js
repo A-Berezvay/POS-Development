@@ -52,7 +52,7 @@ function LoginPage({ onLogin }) {
       </div>
       {/* Number Pad for entering the PIN */}
       <div className="number-pad">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((number) => (
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
           <button
             key={number}
             onClick={() => handleNumberClick(number)}
@@ -64,6 +64,7 @@ function LoginPage({ onLogin }) {
       </div>
       {/* Clear and Submit Buttons */}
       <div className="controls">
+        <button onClick={() => handleNumberClick(0)} className="number-button">0</button>
         <button onClick={handleClear} className="clear-button">Clear</button>
         <button onClick={handleSubmit} className="submit-button">Submit</button>
       </div>

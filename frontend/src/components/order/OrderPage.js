@@ -9,7 +9,7 @@ const mainCategories = ['Food', 'Drinks'];
 const foodSubCategories = ['Starters', 'Mains', 'Sides', 'Desserts'];
 const drinksSubCategories = ['Wines', 'Beers', 'Spirits', 'Soft Drinks', 'Hot Drinks'];
 const wineTypes = ['Red', 'White', 'Rose', 'Sparkling'];
-const wineSizes = ['125ml', '175ml', '250ml', 'bottle'];
+const wineSizes = ['125ml', '175ml', '250ml', 'Bottle'];
 const voidReasons = ['Customer Changed Mind', 'Wrong Order', 'Kitchen Error', 'Other'];
 
 const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) => {

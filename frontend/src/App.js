@@ -44,16 +44,17 @@ function App() {
     setCart((prevCart) => {
       const tableCart = prevCart[tableId] || [];
   
-      // Unique key for each item including modifiers and notes
+      // Find an existing item in the cart that matches the same ID, note, modifiers, and allergens
       const existingItemIndex = tableCart.findIndex(
-        (cartItem) => 
+        (cartItem) =>
           cartItem.id === newItem.id &&
           cartItem.note === newItem.note &&
-          JSON.stringify(cartItem.modifier) === JSON.stringify(newItem.modifier)
+          JSON.stringify(cartItem.modifier) === JSON.stringify(newItem.modifier) &&
+          JSON.stringify(cartItem.allergens) === JSON.stringify(newItem.allergens) // Check allergens match
       );
   
       if (existingItemIndex !== -1) {
-        // Update quantity of existing item with same modifier
+        // Update quantity of existing item with the same modifiers and allergens
         const updatedTableCart = [...tableCart];
         updatedTableCart[existingItemIndex] = {
           ...updatedTableCart[existingItemIndex],
@@ -64,7 +65,7 @@ function App() {
           [tableId]: updatedTableCart,
         };
       } else {
-        // If it's a new item (or different modifier), add it separately
+        // If it's a new item (or different allergens), add it separately
         return {
           ...prevCart,
           [tableId]: [...tableCart, newItem],
@@ -72,7 +73,7 @@ function App() {
       }
     });
   
-    // Update table status to occupied and assign a waiter
+    // Optionally update the table status to 'occupied'
     setTables((prevTables) =>
       prevTables.map((table) =>
         table.id === Number(tableId) ? { ...table, status: 'occupied', waiter: 'John Doe' } : table
@@ -82,6 +83,7 @@ function App() {
     // Automatically make the cart modal visible when an item is added
     setIsCartModalVisible(true);
   };
+  
   
   // Function to show allergens in a full-screen modal
   const handleShowAllergens = (allergens) => {
@@ -144,21 +146,23 @@ function App() {
       const updatedOrdersForTable = [...(prevOrders[tableId] || [])];
   
       tableCart.forEach((cartItem) => {
+        // Find existing order with exact match of id, note, modifiers, and allergens
         const existingOrderIndex = updatedOrdersForTable.findIndex(
           (order) =>
             order.id === cartItem.id &&
             order.note === cartItem.note &&
-            JSON.stringify(order.modifier) === JSON.stringify(cartItem.modifier)
+            JSON.stringify(order.modifier) === JSON.stringify(cartItem.modifier) &&
+            JSON.stringify(order.allergens) === JSON.stringify(cartItem.allergens)
         );
   
         if (existingOrderIndex !== -1) {
-          // Update quantity of existing item in ordersReadyForPayment
+          // Update quantity of existing order if found
           updatedOrdersForTable[existingOrderIndex] = {
             ...updatedOrdersForTable[existingOrderIndex],
             quantity: updatedOrdersForTable[existingOrderIndex].quantity + cartItem.quantity,
           };
         } else {
-          // Add the item as a new entry
+          // Add as a new order if no match is found
           updatedOrdersForTable.push(cartItem);
         }
       });
@@ -179,6 +183,7 @@ function App() {
     // Optionally hide the cart modal
     setIsCartModalVisible(false);
   };
+  
   
 
   const onRemoveOrderItem = (tableId, itemId, reason) => {

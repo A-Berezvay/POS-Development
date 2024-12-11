@@ -30,7 +30,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
 
   // Fetch existing orders for the table
   const existingOrders = ordersReadyForPayment[tableId] || [];
-
+  
   const handleModifierSelect = (itemId, modifierType, value) => {
     setItemState((prevState) => {
       const updatedModifier = {
@@ -193,15 +193,18 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
           <h2>Table</h2>
           <span>{tableId}</span>
         </div>
-        <div>
-          <h2>Guests</h2>
-          <span>{numberOfGuests}</span>
+          <div>
+            <h2>Guests</h2>
+            <span>{numberOfGuests}</span>
+          </div>
         </div>
-      </div>
 
       {/* Display existing orders */}
       {existingOrders.map((orderItem, index) => (
-        <div key={`${orderItem.id}-${index}-${orderItem.note}-${JSON.stringify(orderItem.modifier)}`} className="existing-order-item">
+        <div
+          key={`${orderItem.id}-${index}-${orderItem.note}-${JSON.stringify(orderItem.modifier)}-${JSON.stringify(orderItem.allergens)}`}
+          className="existing-order-item"
+        >
           <div className="order-items">
             <span>{orderItem.quantity}x</span>
             <span>{orderItem.name}</span>

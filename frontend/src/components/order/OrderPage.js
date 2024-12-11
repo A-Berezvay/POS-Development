@@ -214,17 +214,25 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
             </button>
           </div>
           <div className="item-note">
-            {orderItem.note && <span>Note: {orderItem.note}</span>}
-            {orderItem.modifier && (
-              <div className="item-modifier">
-                <span>{orderItem.modifier.cooking && <li>{orderItem.modifier.cooking}</li>}</span>
-                <span>{orderItem.modifier.sauce && <li>{orderItem.modifier.sauce}</li>}</span>
-              </div>
+            {orderItem.note ? (
+              <span classname="food-note">{orderItem.note}</span>
+            ) : (
+              <div className="food-note hidden"></div>
             )}
-            {orderItem.allergens?.length > 0 && (
-              <div className="item-allergens">
-                <strong>Allergens:</strong> {orderItem.allergens.join(', ')}
+            {orderItem.modifier ? (
+              <div className="item-modifier">
+                {orderItem.modifier.cooking && <li>{orderItem.modifier.cooking}</li>}
+                {orderItem.modifier.sauce && <li>{orderItem.modifier.sauce}</li>}
               </div>
+            ) : (
+              <div className="item-modifier hidden"></div>
+            )}
+            {orderItem.allergens?.length > 0 ? (
+              <div className="item-allergens">
+                <strong>{orderItem.allergens.map(allergen => allergen.toUpperCase()).join(', ')} ALLERGY</strong>
+              </div>
+            ) : (
+              <div className="item-allergens hidden"></div>
             )}
           </div>
         </div>

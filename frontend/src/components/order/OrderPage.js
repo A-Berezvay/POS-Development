@@ -413,7 +413,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
                     <div><strong>Sauce:</strong> {itemState[item.id].modifier.sauce}</div>
                   )}
                 </div>
-                <div className="quantity-control">
+                <div className="order-page-quantity-control">
                   <button onClick={() => handleDecreaseQuantity(item.id)} className="quantity-button">
                     -
                   </button>

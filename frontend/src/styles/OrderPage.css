@@ -113,6 +113,7 @@
 .cart-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin: 10px 0;
   padding: 10px;
   border-radius: 8px;
@@ -121,6 +122,7 @@
 
 .cart-item-details span {
   color: white;
+  font-size: 1.25em;
 }
 
 .add-to-cart-button {
@@ -177,6 +179,7 @@
 
 .item-note{
   display: flex;
+  color: white;
   flex-direction: column;
 }
 
@@ -273,12 +276,11 @@
 
 /* Quantity Display */
 
-.quantity-control {
+.order-page-quantity-control {
   display: flex;
+  margin: 20px;
   align-items: center;
   justify-content: center;
-  margin: 10px 0 30px 0;
-
 }
 
 .quantity-button {
@@ -304,8 +306,7 @@ label{
 
 .quantity-display {
   color: white;
-  margin: 0 10px;
-  padding: 0 20px;
+  padding: 0 15px;
   font-size: 1.5em;
   font-weight: bold;
 }

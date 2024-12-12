@@ -54,12 +54,12 @@
   }
   
   .remove-button {
-    background: red;
+    background: #C03820;
+    height: 50px;
     color: white;
     border: none;
     padding: 5px 10px;
     cursor: pointer;
-    margin-top: 10px;
   }
   
   .send-to-kitchen-button {

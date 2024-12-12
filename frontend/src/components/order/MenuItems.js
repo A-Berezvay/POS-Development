@@ -20,7 +20,7 @@ const menuItems = [
     { id: 14, name: 'Club Sandwich', category: 'mains', price: 15 },
   
     // Sides 
-    { id: 15, name: 'Triple Cooked Schips', category: 'sides', price: 4 },
+    { id: 15, name: 'Triple Cooked Chips', category: 'sides', price: 4 },
     { id: 16, name: 'Skin On Fries', category: 'sides', price: 3.5 },
     { id: 17, name: 'Charred Hispi Cabbage', category: 'sides', price: 4.5 },
   

@@ -4,6 +4,7 @@ import AllergenModal from './AllergenModal';
 import '../../styles/OrderPage.css';
 import Modifiers from './Modifiers';
 import menuItems from './MenuItems';
+import GuestModal from '../../pages/GuestModal';
 
 const mainCategories = ['Food', 'Drinks'];
 const foodSubCategories = ['Starters', 'Mains', 'Sides', 'Desserts'];
@@ -12,10 +13,12 @@ const wineTypes = ['Red', 'White', 'Rose', 'Sparkling'];
 const wineSizes = ['125ml', '175ml', '250ml', 'Bottle'];
 const voidReasons = ['Customer Changed Mind', 'Wrong Order', 'Kitchen Error', 'Other'];
 
-const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) => {
+const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tables, setTables }) => {
   const { tableId } = useParams();
-  const location = useLocation();
-  const numberOfGuests = location.state?.numberOfGuests || 1;
+  const tableData = tables.find((table) => table.id === parseInt(tableId, 10));
+  const numberOfGuests = tableData?.numberOfGuests || 1;
+  
+  const [isGuestModalVisible, setIsGuestModalVisible] = useState(false);
 
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
@@ -91,6 +94,23 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
       },
     }));
   };
+
+  const handleGuestModal = (tableId) => {
+    setIsGuestModalVisible(true);
+  };
+
+  const updateTableGuests = (newGuestCount) => {
+    setTables((prevTables) =>
+      prevTables.map((table) =>
+        table.id === parseInt(tableId, 10) ? { ...table, numberOfGuests: newGuestCount } : table
+      )
+    );
+  
+    setIsGuestModalVisible(false); // Close the modal
+  };
+  
+  
+  
 
   const handleIncreaseQuantity = (itemId) => {
     setItemState((prevState) => ({
@@ -170,11 +190,13 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
   const handleMainCategoryClick = (category) => {
     setSelectedMainCategory(category.toLowerCase());
     setSelectedSubCategory(null);
+    setSelectedWineType(null);
   };
 
   // Handle subcategory click
   const handleSubCategoryClick = (subCategory) => {
     setSelectedSubCategory(subCategory.toLowerCase());
+    setSelectedWineType(null);
   };
 
   // Handle wine type and size click
@@ -193,7 +215,7 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
           <h2>Table</h2>
           <span>{tableId}</span>
         </div>
-          <div>
+          <div onClick={() => handleGuestModal()}>
             <h2>Guests</h2>
             <span>{numberOfGuests}</span>
           </div>
@@ -443,7 +465,16 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
             ))}
         </div>
       )}
+      {isGuestModalVisible && (
+        <GuestModal
+          isVisible={isGuestModalVisible}
+          onClose={() => setIsGuestModalVisible(false)}
+          onConfirm={updateTableGuests}
+          currentGuests={numberOfGuests}
+        />
+      )}
 
+      {/* ALLERGEN MODAL */}
       {isAllergenModalVisible && (
         <AllergenModal
           allergens={currentAllergens}

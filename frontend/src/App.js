@@ -314,7 +314,16 @@ function App() {
         <Route path='/' element={<LoginPage onLogin={handleLogin} />} />
         {isAuthenticated && (
           <>
-            <Route path="/dashboard" element={<Dashboard tables={tables} setTables={setTables} onAddToCart={addItemToCart} />} />
+            <Route 
+              path="/dashboard" 
+              element={
+                <Dashboard 
+                  tables={tables} 
+                  setTables={setTables} 
+                  onAddToCart={addItemToCart} 
+                />
+              } 
+            />
             <Route 
               path="/table/:tableId/order" 
               element={

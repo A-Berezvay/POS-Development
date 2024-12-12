@@ -15,8 +15,10 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
 
   // Calculate equal splits whenever the number of guests changes
   useEffect(() => {
-    const split = remainingAmount / numberOfGuests;
-    setSplitAmounts(Array(numberOfGuests).fill(parseFloat(split.toFixed(2))));
+    if (numberOfGuests > 0) {
+      const split = remainingAmount / numberOfGuests;
+      setSplitAmounts(Array(numberOfGuests).fill(parseFloat(split.toFixed(2))));
+    }
   }, [numberOfGuests, remainingAmount]);
 
   // Handle number pad input for guests
@@ -69,28 +71,46 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
           <FontAwesomeIcon icon={faXmark} className="split-payment-close" onClick={onClose} />
         </div>
         <div className="split-payment-body">
-          <p className="split-total-amount">Remaining Amount: £{remainingAmount.toFixed(2)}</p>
+          <p className="split-total-amount">Total Amount £<b>{remainingAmount.toFixed(2)}</b></p>
 
           {/* Buttons for predefined splits */}
           <div className="split-buttons">
-            {[2, 3, 4].map((num) => (
-              <button key={num} onClick={() => {
-                setNumberOfGuests(num);
-                setShowSplitBy(true);
-              }}>
-                {num}
-              </button>
-            ))}
-            <button onClick={() => setShowNumberPad(true)}>Other</button>
+            <p>Split between</p>
+            <div>
+              {[2, 3, 4].map((num) => (
+                <button key={num} onClick={() => {
+                  setNumberOfGuests(num);
+                  setShowSplitBy(true);
+                }}>
+                  {num}
+                </button>
+              ))}
+              <button onClick={() => setShowNumberPad(true)}>Other</button>
+            </div>
           </div>
 
-          {/* Display equal split amounts */}
-          {showSplitBy && (
+          {/* Number Pad for Custom Guests */}
+          {showNumberPad && (
+            <div className="number-pad-modal">
+              <div className="split-number-pad">
+                <h3>Enter Number of Guests</h3>
+                <p className="number-display">{customGuests || "0"}</p>
+                <div className="number-buttons">
+                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", "DEL", "0", "OK"].map((num) => (
+                    <button key={num} onClick={() => handleNumberPadInput(num)}>
+                      {num}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Display equal split summary */}
+          {showSplitBy && numberOfGuests > 0 && (
             <div className="split-summary">
               <h3>Split Equally</h3>
-              {splitAmounts.map((amount, index) => (
-                <p key={index}>Guest {index + 1}: £{amount.toFixed(2)}</p>
-              ))}
+              <p>£{(remainingAmount / numberOfGuests).toFixed(2)} each</p>
             </div>
           )}
 
@@ -118,23 +138,6 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
               ))}
             </div>
           </div>
-
-          {/* Number Pad for Custom Guests */}
-          {showNumberPad && (
-            <div className="number-pad-modal">
-              <div className="split-number-pad">
-                <h3>Enter Number of Guests</h3>
-                <p className="number-display">{customGuests || "0"}</p>
-                <div className="number-buttons">
-                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", "DEL", "0", "OK"].map((num) => (
-                    <button key={num} onClick={() => handleNumberPadInput(num)}>
-                      {num}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -142,3 +145,4 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
 };
 
 export default SplitPaymentModal;
+

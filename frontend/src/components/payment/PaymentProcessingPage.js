@@ -36,16 +36,22 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
     }, {})
   );
 
-  // Function to handle the "Pay in Full" button
-  const handlePayInFull = (tableId) => {
-    const remainingTotal = remainingTotalByTable[tableId];
-    if (remainingTotal > 0) {
-      onPayment(tableId); // Clear orders and free the table
-      navigate("/payment-method", { state: { totalAmount: remainingTotal, tableId } });
-    } else {
-      console.error("Total amount is zero or invalid.");
-    }
-  };
+// Function to handle the "Pay in Full" button. In the future Stripe key shall be integrated here to make payments possible.
+
+const handlePayInFull = (tableId) => {
+  const remainingTotal = remainingTotalByTable[tableId];
+  if (remainingTotal > 0) {
+    onPayment(tableId); // Clear orders and free the specific table
+    setRemainingTotalByTable((prev) => {
+      const updatedTotals = { ...prev };
+      delete updatedTotals[tableId]; // Remove the table's remaining total
+      return updatedTotals;
+    });
+  } else {
+    console.error("Total amount is zero or invalid.");
+  }
+};
+
 
   // Function to open the Split Payment modal
   const handleSplitBill = (tableId) => {

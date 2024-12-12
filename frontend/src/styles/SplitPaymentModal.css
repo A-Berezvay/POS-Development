@@ -58,8 +58,12 @@
   .split-buttons {
     gap: 5px;
     display: flex;
+    flex-direction: column;
     margin-bottom: 5px;
+  }
 
+  .split-buttons div {
+    display: flex;
   }
 
   .split-buttons button {

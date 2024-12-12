@@ -37,13 +37,18 @@
 
 .payment-item {
   display: flex;
-  flex-direction: column;
   justify-content: space-around;
   width: 100%;
-  justify-content: space-between;
   align-items: center;
   color: white;
   margin: 10px 0;
+}
+
+.payment-item-details{
+  display: grid;
+  grid-template-columns: 0.5fr 2fr 1fr 0.5fr;
+  align-items: center;
+  width: 100%;
 }
 
 .payment-item span {
@@ -78,9 +83,9 @@
   background-color: #f57f17;
 }
 
-.total-amount {
-  font-weight: bold;
-  margin-top: 15px;
+.amount-details div{
+  display: flex;
+  justify-content: space-between;
 }
 
   

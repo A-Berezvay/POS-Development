@@ -62,7 +62,7 @@ const Dashboard = ({ onAddToCart, tables, setTables }) => {
                 <button onClick={() => handleOpenTable(table.id)}>Pick Up Table</button>
               )}
               {table.status === 'occupied' && table.waiter && (
-                <p>Waiter: {table.waiter}</p> // Displaying the assigned waiter's name
+                <p className="waiter-name">Waiter: {table.waiter}</p> // Displaying the assigned waiter's name
               )}
             </div>
           ))}

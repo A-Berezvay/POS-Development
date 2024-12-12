@@ -76,7 +76,7 @@ button {
   transition: background-color 0.3s;
 }
 
-p {
+.waiter-name {
   margin-top: 10px;
   font-weight: bold;
   color: white;

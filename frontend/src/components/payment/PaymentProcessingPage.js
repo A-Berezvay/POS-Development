@@ -151,9 +151,20 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
 
               {/* Display Subtotal, Service Charge, and Remaining Total */}
               <div className="amount-details">
-                <p>Subtotal: £{subtotal.toFixed(2)}</p>
-                <p>Service Charge (12.5%): £{serviceCharge.toFixed(2)}</p>
-                <h4>Remaining Total: £{remainingTotal.toFixed(2)}</h4>
+                <div>
+                  <h4>Subtotal</h4> 
+                  <h4>£{subtotal.toFixed(2)}</h4>
+                </div>
+                <div>
+                  <h4>Service Charge (12.5%):</h4> 
+                  <h4>£{serviceCharge.toFixed(2)}</h4>
+                </div>
+                <div>
+                <h4>Total:</h4>
+                <h4>£{remainingTotal.toFixed(2)}</h4>
+                </div>
+
+
               </div>
 
               <div className="payment-method-section">

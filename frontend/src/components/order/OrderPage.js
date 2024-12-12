@@ -430,12 +430,15 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem }) =>
                   onChange={(event) => handleNotesChange(item.id, event)}
                   placeholder="Add notes (e.g., no ice)"
                 />
-                <button onClick={() => handleAddToCart(item)} className="add-to-cart-button">
-                  Add to Cart
-                </button>
-                <button onClick={() => handleShowAllergens(item.allergens, item.id)} className="allergen-view-button">
-                  View Allergens
-                </button>
+                <div className="item-card-buttons">
+                  <button onClick={() => handleAddToCart(item)} className="add-to-cart-button">
+                    Add to Cart
+                  </button>
+                  <button onClick={() => handleShowAllergens(item.allergens, item.id)} className="allergen-view-button">
+                    View Allergens
+                  </button>
+                </div>
+
               </div>
             ))}
         </div>

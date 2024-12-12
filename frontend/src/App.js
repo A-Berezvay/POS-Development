@@ -275,24 +275,22 @@ function App() {
     });
   };
   
-  
-  
-
-  // Function to handle payment for a table
-  const handlePayment = (tableId) => {
+  const onPayment = (tableId) => {
     setOrdersReadyForPayment((prevOrders) => {
       const updatedOrders = { ...prevOrders };
-      delete updatedOrders[tableId];
+      delete updatedOrders[tableId]; // Remove orders for the table
       return updatedOrders;
     });
-
-    // Update the table status to 'free' after payment is made
+  
     setTables((prevTables) =>
       prevTables.map((table) =>
-        table.id === Number(tableId) ? { ...table, status: 'free', waiter: null, numberOfGuests: null } : table
+        table.id === Number(tableId)
+          ? { ...table, status: 'free', waiter: null, numberOfGuests: null } // Reset table status
+          : table
       )
     );
   };
+  
 
   // Function to open the split payment modal
   const openSplitPaymentModal = (tableId) => {
@@ -334,7 +332,7 @@ function App() {
               element={
                 <PaymentProcessingPage 
                   ordersReadyForPayment={ordersReadyForPayment} 
-                  onPayment={handlePayment}
+                  onPayment={onPayment}
                   onSplitPayment={openSplitPaymentModal}
                   onRemoveOrderItem={onRemoveOrderItem}
                 />
@@ -358,7 +356,7 @@ function App() {
         <SplitPaymentModal
           ordersReadyForPayment={ordersReadyForPayment[currentTableForSplit]}
           onClose={closeSplitPaymentModal}
-          onPayment={() => handlePayment(currentTableForSplit)}
+          onPayment={() => onPayment(currentTableForSplit)}
         />
       )}
 

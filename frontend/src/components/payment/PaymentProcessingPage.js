@@ -1,51 +1,72 @@
-import React, { useState } from 'react';
-import '../../styles/PaymentProcessingPage.css';
-import SplitPaymentModal from './SplitPaymentModal'; // Import the new split payment modal component
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import "../../styles/PaymentProcessingPage.css";
+import SplitPaymentModal from "./SplitPaymentModal"; // Import the new split payment modal component
+import { useNavigate } from "react-router-dom";
 
-const voidReasons = ['Customer Changed Mind', 'Wrong Order', 'Kitchen Error', 'Other'];
+const voidReasons = ["Customer Changed Mind", "Wrong Order", "Kitchen Error", "Other"];
 
 const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrderItem }) => {
-  const [showSplitModal, setShowSplitModal] = useState(false);
-  const [isVoidModalVisible, setIsVoidModalVisible] = useState(false);
-  const [itemToVoid, setItemToVoid] = useState(null);
-  const [tableIdForVoid, setTableIdForVoid] = useState(null);
   const navigate = useNavigate();
 
-  // This function handles the calculation of the total amount for a given table
-  const getTotalAmount = (tableId) => {
+  // Function to calculate subtotal, service charge, and total amount
+  const getAmountDetails = (tableId) => {
     const ordersForTable = ordersReadyForPayment[tableId] || [];
-    return ordersForTable.reduce((total, item) => {
+    const subtotal = ordersForTable.reduce((total, item) => {
       const price = parseFloat(item.price) || 0;
       const quantity = item.quantity || 1;
       return total + price * quantity;
     }, 0);
+
+    const serviceCharge = subtotal * 0.125; // 12.5% service charge
+    const totalAmount = subtotal + serviceCharge;
+
+    return { subtotal, serviceCharge, totalAmount };
   };
+
+  const [showSplitModal, setShowSplitModal] = useState(false);
+  const [isVoidModalVisible, setIsVoidModalVisible] = useState(false);
+  const [itemToVoid, setItemToVoid] = useState(null);
+  const [tableIdForVoid, setTableIdForVoid] = useState(null);
+  const [currentTableForSplit, setCurrentTableForSplit] = useState(null);
+  const [remainingTotalByTable, setRemainingTotalByTable] = useState(
+    Object.keys(ordersReadyForPayment).reduce((acc, tableId) => {
+      const { totalAmount } = getAmountDetails(tableId);
+      acc[tableId] = totalAmount;
+      return acc;
+    }, {})
+  );
 
   // Function to handle the "Pay in Full" button
   const handlePayInFull = (tableId) => {
-    const totalAmount = getTotalAmount(tableId);
-    if (totalAmount > 0) {
-      // Redirect to a new page for selecting the payment method
-      navigate('/payment-method', { state: { totalAmount, tableId } });
+    const remainingTotal = remainingTotalByTable[tableId];
+    if (remainingTotal > 0) {
+      onPayment(tableId); // Clear orders and free the table
+      navigate("/payment-method", { state: { totalAmount: remainingTotal, tableId } });
     } else {
       console.error("Total amount is zero or invalid.");
     }
   };
 
-  // Function to open the Split Payment modal and pass totalAmount
+  // Function to open the Split Payment modal
   const handleSplitBill = (tableId) => {
-    const totalAmount = getTotalAmount(tableId);
-    if (totalAmount > 0) {
-      setShowSplitModal(true);
-    } else {
-      console.error("Total amount is zero or invalid.");
-    }
+    setCurrentTableForSplit(tableId);
+    setShowSplitModal(true);
   };
 
-  // Close the Split Payment modal
+  // Function to close the Split Payment modal
   const closeSplitModal = () => {
     setShowSplitModal(false);
+    setCurrentTableForSplit(null);
+  };
+
+  // Update remaining total in both modal and page
+  const updateRemainingTotal = (amount) => {
+    if (currentTableForSplit) {
+      setRemainingTotalByTable((prev) => ({
+        ...prev,
+        [currentTableForSplit]: parseFloat((prev[currentTableForSplit] - amount).toFixed(2)),
+      }));
+    }
   };
 
   // Handle void item initiation
@@ -62,7 +83,6 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
       setItemToVoid(null);
       setTableIdForVoid(null);
     }
-    // Close the void modal after selecting a reason
     setIsVoidModalVisible(false);
   };
 
@@ -73,8 +93,9 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
         <p>No tables are ready for payment.</p>
       ) : (
         Object.keys(ordersReadyForPayment).map((tableId) => {
-          // Calculate total amount for the table
-          const totalAmount = getTotalAmount(tableId);
+          const { subtotal, serviceCharge, totalAmount } = getAmountDetails(tableId);
+          const remainingTotal = remainingTotalByTable[tableId];
+
           return (
             <div key={tableId} className="payment-table">
               <div className="bill-header">
@@ -84,7 +105,7 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
                 </div>
                 <div className="bill-header-sections">
                   <h3>Total</h3>
-                  <span>£{totalAmount.toFixed(2)}</span>
+                  <span>£{remainingTotal.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -95,7 +116,7 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
                     <div className="payment-item-details">
                       <span>{item.quantity}x</span>
                       <span>{item.name}</span>
-                      <span>£{(itemPrice).toFixed(2)}</span>
+                      <span>£{itemPrice.toFixed(2)}</span>
                       <button
                         onClick={() => handleVoidItemClick(tableId, item)}
                         className="void-item-button"
@@ -103,7 +124,6 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
                         x
                       </button>
                     </div>
-                    <div>
                     {isVoidModalVisible && itemToVoid?.id === item.id && tableIdForVoid === tableId && (
                       <div className="void-modal">
                         <div className="void-modal-content">
@@ -116,18 +136,25 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
                               </button>
                             ))}
                           </div>
-                          <button onClick={() => setIsVoidModalVisible(false)} className="close-void-modal">
+                          <button
+                            onClick={() => setIsVoidModalVisible(false)}
+                            className="close-void-modal"
+                          >
                             Cancel
                           </button>
                         </div>
                       </div>
                     )}
-                    </div>
-
                   </div>
                 );
               })}
-              <h4>Total Amount: £{totalAmount.toFixed(2)}</h4>
+
+              {/* Display Subtotal, Service Charge, and Remaining Total */}
+              <div className="amount-details">
+                <p>Subtotal: £{subtotal.toFixed(2)}</p>
+                <p>Service Charge (12.5%): £{serviceCharge.toFixed(2)}</p>
+                <h4>Remaining Total: £{remainingTotal.toFixed(2)}</h4>
+              </div>
 
               <div className="payment-method-section">
                 <button onClick={() => handlePayInFull(tableId)} className="pay-in-full-button">
@@ -142,12 +169,14 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
         })
       )}
 
-      {/* Conditionally render the SplitPaymentModal and pass totalAmount */}
-      {showSplitModal && (
+      {/* Conditionally render the SplitPaymentModal */}
+      {showSplitModal && currentTableForSplit && (
         <SplitPaymentModal
-          totalAmount={getTotalAmount(Object.keys(ordersReadyForPayment)[0])} // Pass totalAmount to the modal
+          totalAmount={remainingTotalByTable[currentTableForSplit]}
           onClose={closeSplitModal}
-          onPayment={onPayment}
+          onConfirmSplitPayment={onPayment}
+          tableId={currentTableForSplit}
+          updateRemainingTotal={updateRemainingTotal}
         />
       )}
     </div>
@@ -155,3 +184,4 @@ const PaymentProcessingPage = ({ ordersReadyForPayment, onPayment, onRemoveOrder
 };
 
 export default PaymentProcessingPage;
+

@@ -10,12 +10,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: auto;
     z-index: 50;
   }
   
   .split-payment-container {
     width: 90%;
     height: 100%;
+    overflow: auto;
     background: #484747;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

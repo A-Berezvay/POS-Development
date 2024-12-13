@@ -43,28 +43,32 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
   // Handle custom amount input
   const handleAmountPadInput = (value) => {
     if (value === "OK") {
-      const amount = parseFloat(customAmount);
-      if (amount > 0 && amount <= remainingAmount) {
-        setRemainingAmount((prev) => parseFloat((prev - amount).toFixed(2)));
-        setPaidAmounts((prev) => [...prev, amount]);
-        setCustomAmount("");
-
-        if (parseFloat((remainingAmount - amount).toFixed(2)) === 0) {
-          onConfirmSplitPayment(tableId); // Reset table and free it
-          onClose(); // Close modal
+      if (customAmount !== "") {
+        const numericValue = parseInt(customAmount, 10) || 0;
+        const amount = numericValue / 100; // Convert cents to dollars (e.g., "4720" -> "47.20")
+        if (amount > 0 && amount <= remainingAmount) {
+          setRemainingAmount((prev) => parseFloat((prev - amount).toFixed(2)));
+          setPaidAmounts((prev) => [...prev, amount]);
+          setCustomAmount(""); // Clear the custom amount field
+  
+          if (parseFloat((remainingAmount - amount).toFixed(2)) === 0) {
+            onConfirmSplitPayment(tableId); // Reset the table and free it
+            onClose(); // Close the modal
+          }
+        } else {
+          alert("Invalid amount. Ensure it's positive and less than or equal to the remaining amount.");
         }
-      } else {
-        alert("Invalid amount. Ensure it's positive and less than or equal to the remaining amount.");
       }
     } else if (value === "DEL") {
-      setCustomAmount((prev) => prev.slice(0, -1));
+      setCustomAmount((prev) => prev.slice(0, -1)); // Remove the last digit
     } else {
-      setCustomAmount((prev) => (prev + value).replace(/^0+/, ""));
+      setCustomAmount((prev) => prev + value); // Append the new digit
     }
   };
+  
 
   return (
-    <div className="split-payment-modal">
+    <main className="split-payment-modal">
       <div className="split-payment-container">
         <div className="split-payment-header">
           <h2>Split Payment</h2>
@@ -96,7 +100,7 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
                 <h3>Enter Number of Guests</h3>
                 <p className="number-display">{customGuests || "0"}</p>
                 <div className="number-buttons">
-                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", "DEL", "0", "OK"].map((num) => (
+                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "DEL", "OK"].map((num) => (
                     <button key={num} onClick={() => handleNumberPadInput(num)}>
                       {num}
                     </button>
@@ -129,9 +133,9 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
           {/* Custom Amount Input */}
           <div className="amount-pad-modal">
             <h3>Enter Amount</h3>
-            <p className="amount-display">£{customAmount || "0"}</p>
+            <p className="amount-display">£{customAmount ? (parseInt(customAmount, 10) / 100).toFixed(2) : "0.00"}</p>
             <div className="amount-buttons">
-              {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "DEL", "OK"].map((key) => (
+              {["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "DEL", "OK"].map((key) => (
                 <button key={key} onClick={() => handleAmountPadInput(key)}>
                   {key}
                 </button>
@@ -140,7 +144,7 @@ const SplitPaymentModal = ({ totalAmount, onClose, onConfirmSplitPayment, tableI
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

@@ -265,13 +265,78 @@
   border: 1px solid black;
 }
 
-.wine-size-button.active{
+.wine-size-button.active {
   background-color: darkblue;
   box-shadow: 2px 2px black;
   color: white;
 }
 
-.allergen-view-button{
+.beer-size-buttons-container{
+  display: flex;
+  justify-content: space-around;
+}
+
+.beer-size-button {
+  font-size: 1.25em;
+  padding: 20px 0;
+  width: 100px;
+  background-color: #007bff;
+  color: white;
+  border: 1px solid black;
+}
+
+.beer-size-button.active {
+  background-color: darkblue;
+  box-shadow: 2px 2px black;
+  color: white;
+}
+
+.spirit-size-button {
+  font-size: 1.25em;
+  padding: 20px 0;
+  width: 100px;
+  background-color: #007bff;
+  color: white;
+  border: 1px solid black;
+}
+
+.spirit-size-button.active {
+  background-color: darkblue;
+  box-shadow: 2px 2px black;
+  color: white;
+}
+
+.spirit-type-button {
+  font-size: 1.25em;
+  padding: 20px 0;
+  width: 100px;
+  background-color: #007bff;
+  color: white;
+  border: 1px solid black;
+}
+
+.spirit-type-button.active {
+  background-color: darkblue;
+  box-shadow: 2px 2px black;
+  color: white;
+}
+
+.hot-drink-type-button {
+  font-size: 1.25em;
+  padding: 20px 0;
+  width: 100px;
+  background-color: #007bff;
+  color: white;
+  border: 1px solid black;
+}
+
+.hot-drink-type-button.active {
+  background-color: darkblue;
+  box-shadow: 2px 2px black;
+  color: white;
+}
+
+.allergen-view-button {
   background-color: #007bff;
   color: white;
   margin: 10px 0;
@@ -288,7 +353,7 @@
 
 .order-page-quantity-control {
   display: flex;
-  margin: 20px;
+  margin-bottom: 20px;
   align-items: center;
   justify-content: center;
 }

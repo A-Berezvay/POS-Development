@@ -11,6 +11,10 @@ const foodSubCategories = ['Starters', 'Mains', 'Sides', 'Desserts'];
 const drinksSubCategories = ['Wines', 'Beers', 'Spirits', 'Soft Drinks', 'Hot Drinks'];
 const wineTypes = ['Red', 'White', 'Rose', 'Sparkling'];
 const wineSizes = ['125ml', '175ml', '250ml', 'Bottle'];
+const beerSizes = ['0.5 Pint', '1 Pint'];
+const spiritTypes = ['Gin', 'Vodka', 'Rum', 'Whiskey'];
+const spiritSizes = ['25ml', '50ml'];
+const hotDrinkTypes = ['coffees', 'teas'];
 const voidReasons = ['Customer Changed Mind', 'Wrong Order', 'Kitchen Error', 'Other'];
 
 const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tables, setTables }) => {
@@ -24,6 +28,10 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tabl
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedWineType, setSelectedWineType] = useState(null);
   const [selectedWineSize, setSelectedWineSize] = useState(null);
+  const [selectedBeerSize, setSelectedBeerSize] = useState(null);
+  const [selectedSpiritType, setSelectedSpiritType] = useState(null);
+  const [selectedSpiritSize, setSelectedSpiritSize] = useState(null);
+  const [selectedHotDrinkType, setSelectedHotDrinkType] = useState(null);
   const [itemState, setItemState] = useState({});
   const [isAllergenModalVisible, setIsAllergenModalVisible] = useState(false);
   const [currentAllergens, setCurrentAllergens] = useState([]);
@@ -61,8 +69,16 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tabl
     }
 
     let price;
-    if (typeof item.price === 'object' && selectedWineSize) {
-      price = parseFloat(item.price[selectedWineSize]) || 0;
+    if (typeof item.price === 'object') {
+      if (selectedWineSize && item.category === 'white' || item.category === 'red' || item.category === 'rose' || item.category === 'sparkling') {
+        price = parseFloat(item.price[selectedWineSize]) || 0;
+      } else if (selectedBeerSize && item.category === 'beers') {
+        price = parseFloat(item.price[selectedBeerSize]) || 0;
+      } else if (selectedSpiritSize && item.category === 'spirits') {
+        price = parseFloat(item.price[selectedSpiritSize]) || 0;
+      } else {
+        price = 0; // Default if no size is selected
+      }
     } else if (typeof item.price === 'number') {
       price = item.price;
     } else {
@@ -108,9 +124,6 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tabl
   
     setIsGuestModalVisible(false); // Close the modal
   };
-  
-  
-  
 
   const handleIncreaseQuantity = (itemId) => {
     setItemState((prevState) => ({
@@ -206,6 +219,22 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tabl
 
   const handleWineSizeClick = (size) => {
     setSelectedWineSize(size);
+  };
+
+  const handleBeerSizeClick = (size) => {
+    setSelectedBeerSize(size);
+  };
+
+  const handleSpiritTypeClick = (type) => {
+    setSelectedSpiritType(type);
+  };
+
+  const handleSpiritSizeClick = (size) => {
+    setSelectedSpiritSize(size);
+  };
+
+  const handleHotDrinkTypeClick = (type) => {
+    setSelectedHotDrinkType(type);
   };
 
   return (
@@ -339,19 +368,85 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tabl
       )}
 
       {/* Wine Size Buttons */}
-      {selectedWineType && ['red', 'white', 'rose'].includes(selectedWineType) && (
+      {selectedWineType && ['red', 'white', 'rose', 'sparkling'].includes(selectedWineType) && (
         <div className="wine-size-buttons-container">
-          {wineSizes.map((size) => (
+          {wineSizes
+            .filter((size) => selectedWineType === 'sparkling' ? ['125ml', 'Bottle'].includes(size) : true)
+            .map((size) => (
+              <button
+                key={size}
+                onClick={() => handleWineSizeClick(size)}
+                className={`wine-size-button ${selectedWineSize === size ? 'active' : ''}`}
+              >
+                {size}
+              </button>
+            ))}
+        </div>
+      )}
+
+      {/* Beer Sizes Buttons */}
+      {selectedSubCategory === 'beers' && (
+        <div className="beer-type-buttons-container">
+          {beerSizes.map((size) => (
             <button
               key={size}
-              onClick={() => handleWineSizeClick(size)}
-              className={`wine-size-button ${selectedWineSize === size ? 'active' : ''}`}
+              onClick={() => handleBeerSizeClick(size)}
+              className={`beer-size-button ${selectedBeerSize === size ? 'active' : ''}`}
             >
               {size}
             </button>
           ))}
         </div>
       )}
+
+        {/* Spirit Type Buttons */}
+        {selectedSubCategory === 'spirits' && (
+        <div className="spirit-type-buttons-container">
+          {spiritTypes.map((type) => (
+            <button
+              key={type}
+              onClick={() => handleSpiritTypeClick(type)}
+              className={`spirit-type-button ${selectedSpiritType === type ? 'active' : ''}`}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+      )}
+
+        {/* Spirit Sizes Buttons */}
+        {selectedSubCategory === 'spirits' && (
+        <div className="spirit-type-buttons-container">
+          {spiritSizes.map((size) => (
+            <button
+              key={size}
+              onClick={() => handleSpiritSizeClick(size)}
+              className={`spirit-size-button ${selectedSpiritSize === size ? 'active' : ''}`}
+            >
+              {size}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Hot Drinks Subcategories */}
+      {selectedSubCategory === 'hot drinks' && (
+        <div className="hot-drinks-buttons-container">
+          <button
+            onClick={() => setSelectedSubCategory('coffees')}
+            className={`hot-drink-type-button ${selectedSubCategory === 'coffees' ? 'active' : ''}`}
+          >
+            Coffees
+          </button>
+          <button
+            onClick={() => setSelectedSubCategory('teas')}
+            className={`hot-drink-type-button ${selectedSubCategory === 'teas' ? 'active' : ''}`}
+          >
+            Teas
+          </button>
+        </div>
+      )}
+
 
       {/* Menu Items */}
       {(selectedMainCategory && (selectedSubCategory || selectedWineType)) && (
@@ -370,10 +465,16 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tabl
               } else if (selectedWineType && selectedMainCategory === 'drinks') {
                 return item.category === selectedWineType.toLowerCase();
               } else if (selectedSubCategory && selectedMainCategory === 'drinks') {
+                if (selectedSubCategory === 'spirits') {
+                  return item.category === 'spirits' && (!selectedSpiritType || item.type === selectedSpiritType.toLowerCase());
+                } else if (selectedSubCategory === 'coffees' || selectedSubCategory === 'teas') {
+                  return item.category === 'hot drinks' && item.type === selectedSubCategory.toLowerCase();
+                }
                 return item.category === selectedSubCategory.toLowerCase();
               }
               return false;
             })
+
             .map((item) => (
               <div key={item.id} className="menu-item-card">
                 <div className="item-card-heading">
@@ -381,8 +482,12 @@ const OrderPage = ({ onAddToCart, ordersReadyForPayment, onRemoveOrderItem, tabl
                   <p>
                     £
                     {typeof item.price === 'object'
-                      ? selectedWineSize
+                      ? selectedSubCategory === 'wines' && selectedWineSize
                         ? item.price[selectedWineSize]
+                        : selectedSubCategory === 'beers' && selectedBeerSize
+                        ? item.price[selectedBeerSize]
+                        : selectedSubCategory === 'spirits' && selectedSpiritSize
+                        ? item.price[selectedSpiritSize]
                         : 'Select a size'
                       : item.price}
                   </p>
